@@ -20,19 +20,19 @@ pos(vec)
 
 \item{nu}{degrees of freedom for Student's t distribution, default 10}
 
-\item{nmcmc}{number of MCMC iterations}
+\item{nmcmc}{number of MCMC iterations, default 10000}
 
-\item{g1}{shape for IG prior on sigma^2}
+\item{g1}{shape for IG prior on sigma^2, default 0}
 
-\item{g2}{scale for IG prior on sigma^2}
+\item{g2}{scale for IG prior on sigma^2, default 0}
 
-\item{h1}{shape for gamma prior on lambda}
+\item{h1}{shape for gamma prior on lambda, default 10}
 
-\item{h2}{scale for gamma prior on lambda}
+\item{h2}{scale for gamma prior on lambda, default 10}
 
 \item{verbose}{prints running output every ticker iterations if TRUE, can be changed}
 
-\item{ticker}{see parameter verbose, should be a multiple of 100, 500, or 1000}
+\item{ticker}{see parameter verbose, should be a multiple of 100, 500, or 1000, default is 1000 for 10000 nmcmc iterations}
 }
 \value{
 a list object with estimated model parameters
