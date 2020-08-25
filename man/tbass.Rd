@@ -5,7 +5,7 @@
 \alias{pos}
 \title{t-Distributed Bayesian Adaptive Spline Surfaces (TBASS).}
 \usage{
-pos(vec)
+tbass(X,y)
 }
 \arguments{
 \item{X}{a dataframe matrix of predictor values}
@@ -31,8 +31,6 @@ pos(vec)
 \item{h2}{scale for gamma prior on lambda, default 10}
 
 \item{verbose}{prints running output every ticker iterations if TRUE, can be changed}
-
-\item{ticker}{see parameter verbose, should be a multiple of 100, 500, or 1000, default is 1000 for 10000 nmcmc iterations}
 }
 \value{
 a list object with estimated model parameters

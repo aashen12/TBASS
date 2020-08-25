@@ -14,6 +14,7 @@
 #' @title t-Distributed Bayesian Adaptive Spline Surfaces (TBASS).
 #' @name tbass
 #' @description Robust BMARS function for Student's t-distributed likelihoods. See bass function in package BASS. Returns the estimated model parameters.
+#' @usage tbass(X,y)
 #' @param X a dataframe matrix of predictor values
 #' @param y vector of response data, ideally with noise
 #' @param max.int maximum degree of interaction, default is 3
@@ -26,7 +27,6 @@
 #' @param h1 shape for gamma prior on lambda, default 10
 #' @param h2 scale for gamma prior on lambda, default 10
 #' @param verbose prints running output every ticker iterations if TRUE, can be changed
-#' @param ticker see parameter verbose, should be a multiple of 100, 500, or 1000, default is 1000 for 10000 nmcmc iterations
 #' @return a list object with estimated model parameters
 #' @export
 #' @import mnormt
@@ -62,6 +62,7 @@ getd<-function(X,v,s2,tau2,y){
 
 tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE){
   ticker = nmcmc/10
+  # see parameter verbose, should be a multiple of 100, 500, or 1000, default is 1000 for 10000 nmcmc iterations
   Xt<-t(X)
   n<-length(y)
   p<-ncol(X)
