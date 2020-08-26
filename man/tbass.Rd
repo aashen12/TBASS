@@ -3,7 +3,7 @@
 \name{tbass}
 \alias{tbass}
 \alias{pos}
-\title{t-Distributed Bayesian Adaptive Spline Surfaces (TBASS).}
+\title{t-Distributed Bayesian Adaptive Spline Surfaces (TBASS)}
 \usage{
 tbass(X,y)
 }

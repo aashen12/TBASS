@@ -11,7 +11,7 @@
 #' pos() takes a vector x and returns max(0, x);
 #' getd() uses Cholesky decomposition for TBASS likelihood to return V matrix and beta_hat;
 #' makeBasis() creates a basis function given signs, variables, knot locations and data or X matrix.
-#' @title t-Distributed Bayesian Adaptive Spline Surfaces (TBASS).
+#' @title t-Distributed Bayesian Adaptive Spline Surfaces (TBASS)
 #' @name tbass
 #' @description Robust BMARS function for Student's t-distributed likelihoods. See bass function in package BASS. Returns the estimated model parameters.
 #' @usage tbass(X,y)
