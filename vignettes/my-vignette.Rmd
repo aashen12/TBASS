@@ -1,0 +1,30 @@
+---
+title: "TBASS: A Robust Adaptation of Bayesian Adaptive Spline Surfaces"
+author: Andy Shen, Devin Francom
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{TBASS: A Robust Adaptation of Bayesian Multivariate Adaptive Regression Splines}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include=FALSE}
+library(TBASS)
+```
+
+------------------------
+
+## Abstract
+
+The package `TBASS` is an extension of the R package `BASS` created by Francom et. al (2016). The package is used to fit a Bayesian   adaptive spline surface to a dataset that has outliers. Much of the framework for `TBASS` is adapted from the concepts of Bayesian     Multivariate Adaptive Regression Splines (BMARS), specifically, the work done from Denison, Mallick, and Smith (1998).\NEWLINE
+  
+**Keywords**: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis
+
+------------------------
