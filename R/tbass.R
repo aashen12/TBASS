@@ -30,8 +30,6 @@
 #' @return a list object with estimated model parameters
 #' @export
 #' @import mnormt
-#'
-#'
 
 pos<-function(vec){
   (abs(vec)+vec)/2
