@@ -1,8 +1,7 @@
 ---
 title: "TBASS: A Robust Adaptation of Bayesian Adaptive Spline Surfaces"
 author: "Andy Shen, Devin Francom"
-institution: 'CCS-6'
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{TBASS: A Robust Adaptation of Bayesian Multivariate Adaptive Regression Splines}
   %\VignetteEngine{knitr::rmarkdown}
@@ -12,20 +11,93 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  echo = FALSE,
   comment = "#>"
 )
 ```
 
 ```{r setup, include=FALSE}
 library(TBASS)
+# rmarkdown::html_vignette
+fig <- 1
 ```
 
 ------------------------
 
 ## Abstract
 
-The R package `TBASS` is an extension of the package `BASS` created by Francom et. al (2016). The package is used to fit a Bayesian   adaptive spline surface to a dataset that has outliers. Much of the framework for `TBASS` is adapted from the concepts of Bayesian     Multivariate Adaptive Regression Splines (BMARS), specifically, the work done from Denison, Mallick, and Smith (1998).\newline
+The R package `TBASS` is an extension of the package `BASS` created by Francom et. al (2016). The package is used to fit a Bayesian   adaptive spline surface to a dataset that follows a Student's t-distribution or has outliers. Much of the framework for `TBASS` is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done from Denison, Mallick, and Smith (1998). By including a more robust model, a dataset with outliers can now be accurately fit using BMARS, without the possibility of overfitting or variance inflation.\newline
   
 **Keywords**: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis
 
 ------------------------
+
+# 1 Introduction
+
+Splines are a commonly used regression tool for fitting nonlinear data. Splines can act as basis functions, where the basis functions act as the $X$ matrix. The simplest way to create the ith basis functions can be represented as
+
+\begin{equation}
+\label{1}
+X_{ij} = [s_i(x_{j} - t_{i})]_{+}
+\end{equation}
+
+Equation (\ref{1}) is used to calculate the ith column of the $X$ matrix of basis functions, where $s_i \in {-1,1}$, $t_i$ is called a **knot** and $[a]_{+} = max(0, a)$.
+
+For example, given the nonlinear data shown in figure 1 below, we can use (\ref{1}) to fit a spline model shown in figure 2.
+
+```{r}
+n <- 300
+x <- seq(0,1,length.out=n)
+y <- sin(2 * pi * x^2) * 10 + rnorm(n)
+plot(x,y,main=paste0("Figure ",fig," : Univariate Nonlinear Data"))
+fig <- fig + 1
+```
+
+
+```{r}
+generate_spline <- function(tvec, nknot = length(tvec)) {
+  s <- sample(c(1), nknot, replace = TRUE)
+  Bmat <- matrix(NA, nknot, length(x))
+  hs <- Bmat
+  
+  for(i in 1:nknot) {
+    for(j in 1:length(x)) {
+      Bmat[i,j] <- max(s[i] * (x[j] - tvec[i]), 0)
+    } #creating basis functions
+  }
+  
+  mBmat <- t(Bmat)
+  mod <- lm(y ~ mBmat) #use gibbs to sample coefs in bayes
+  pred <- predict(mod)
+
+  
+  plot(x,y,main=paste0("Figure ",fig," : Univariate Spline Function"))
+  lines(x, pred, type = "l", lwd = 5, col="blue1")
+  #list(basis=mBmat)
+}
+t <- c(0, 0.525, 0.875); generate_spline(t)
+```
+
+
+\pagebreak
+
+# 2 Bayesian Multivariate Adaptive Splines
+
+We want to extend the theory behind frequentist univariate spline regression to a multivariate Bayesian framework. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
