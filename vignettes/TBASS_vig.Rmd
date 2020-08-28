@@ -1,7 +1,14 @@
 ---
 title: "TBASS: A Robust Adaptation of Bayesian Adaptive Spline Surfaces"
-author: "Andy Shen, Devin Francom"
-output: pdf_document
+author: "Andy A. Shen, Kellin N. Rumsey, Devin C. Francom"
+date: "Statistical Sciences Group (CCS-6): Los Alamos National Laboratory"
+header-includes:
+- \usepackage{amsmath}
+- \usepackage{amssymb}
+- \usepackage{amsthm}
+output: 
+  pdf_document:
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{TBASS: A Robust Adaptation of Bayesian Multivariate Adaptive Regression Splines}
   %\VignetteEngine{knitr::rmarkdown}
@@ -24,15 +31,18 @@ fig <- 1
 
 ------------------------
 
-## Abstract
+\begin{abstract}
 
-The R package `TBASS` is an extension of the `BASS` package created by Francom et. al (2016). The package is used to fit a Bayesian   adaptive spline surface to a dataset that follows a Student's t-distribution or has outliers. Much of the framework for `TBASS` is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done from Denison, Mallick, and Smith (1998). By including a more robust model, a dataset with outliers can now be accurately fit using BMARS, without the possibility of overfitting or variance inflation.\newline
-  
-**Keywords**: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis\newline
+The R package `TBASS` is an extension of the `BASS` package created by Francom et. al (2016). The package is used to fit a Bayesian   adaptive spline surface to a dataset that follows a Student's t-distribution or has outliers. Much of the framework for `TBASS` is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done from Denison, Mallick, and Smith (1998). By including a more robust generalization, a dataset with outliers can now be accurately fit using the BMARS model, without the possibility of overfitting or variance inflation.\newline
+
+\end{abstract}
+
+**Keywords**: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis
+
 
 ------------------------
 
-# 1 Introduction
+# Introduction
 
 Splines are a commonly used regression tool for fitting nonlinear data. Splines can act as basis functions, where all of the basis combine to form the $\boldsymbol X$ matrix. The simplest way to create the ith basis functions can be represented as
 
@@ -43,7 +53,7 @@ X_{ij} = [s_i(x_{j} - t_{i})]_{+}
 
 Equation (\ref{1}) is used to calculate the ith column of the $X$ matrix of basis functions, where $s_i \in {-1,1}$, $t_i$ is called a **knot** and $[a]_{+} = max(0, a)$.
 
-For example, given the nonlinear data shown in figure 1 below, we can use (\ref{1}) to fit a spline model shown in figure 2.
+For example, given the nonlinear data shown in Figure 1 below, we can use (\ref{1}) to fit a spline model shown in Figure 2.
 
 ```{r}
 n <- 300
@@ -53,6 +63,7 @@ plot(x,y,main=paste0("Figure ",fig," : Univariate Nonlinear Data"))
 fig <- fig + 1
 ```
 
+\  
 
 ```{r}
 generate_spline <- function(tvec, nknot = length(tvec)) {
@@ -81,15 +92,17 @@ t <- c(0, 0.525, 0.875); generate_spline(t)
 
 \pagebreak
 
-# 2 Robust BMARS 
+# Robust BMARS 
 
-## 2.1 Overview
+## Overview
 
 We want to extend the theory behind frequentist univariate spline regression to a multivariate Bayesian framework. Moreover, we want to be able to fit nonlinear data that has outliers. We adopt the Gaussian BMARS framework based on the standard framework used by Dennison et al. (1998) and Francom (2018) when deriving our likelihood and full conditional distributions for the parameters. 
 
 In the presence of outliers, Gaussian BMARS will attempt to capture the excess noise by adding basis functions (overfitting) or inflating the variance term ($\sigma^2$). The Robust BMARS model accounts for this sensitivity to outliers by avoiding overfitting or variance inflation when the degrees of freedom ($\nu$) are low. When $\nu$ is high, the t-distribution closely mimics a normal distribution, so the Robust BMARS model behaves in a similar way.
 
-## 2.2 Auxiliary Variables
+The function used to fit the Robust BMARS model in the `TBASS` package is the `tbass()` command (see section [4](#tbass)). 
+
+## Auxiliary Variables
 
 In creating the Robust BMARS model, we introduce new auxiliary parameters based on the work done by Gelman et al. (2014).  
 
@@ -113,7 +126,7 @@ where $\boldsymbol X$ represents the matrix of basis functions by column, $\bold
 
 The basis functions themselves are produced the same way as in the `BASS` package by Francom, et al. (2016).
 
-## 2.3 Priors
+## Priors
 
 We assume an Inverse-Gamma prior for $\sigma^2$ with default shape $\gamma_1 = 0$ and default rate $\gamma_2=0$, and a Gamma prior with shape and rate $\frac{\nu}{2}$ for $V_i$, such that
 
@@ -145,13 +158,13 @@ where $h_1 = h_2= 10$ are the default hyperparameters for $\lambda$ and $M$ is t
 
 It follows that $\lambda$ follows a gamma prior.
  
-## 2.4 Regression Coefficients
+## Regression Coefficients
 
 Finally, our regression coefficients $\boldsymbol\beta$ follow a Gaussian prior such that
 
 \begin{equation}
 \label{8}
-\beta | \cdot \sim \mathcal{N} \left( 0,~\tau^2 \boldsymbol{I} \right)
+\boldsymbol\beta | \cdot \sim \mathcal{N} \left( 0,~\tau^2 \boldsymbol{I} \right)
 \end{equation}
 
 
@@ -159,16 +172,32 @@ In the Student's t-distribution, we can marginalize the posterior for $\boldsymb
 
 \begin{equation}
 \label{9}
+\boldsymbol{\hat{\beta}} = 
 \frac{1}{\sigma^2}
 \left( \frac{1}{\sigma^2} \boldsymbol{X'VX} + {\tau^{-2}}{\boldsymbol{I}} \right)^{-1} \boldsymbol{X' V}{\boldsymbol{y}}
 \end{equation}
 
-where $\tau^2$ is the prior variance for $\beta$.
 
-Like Gaussian BMARS, the robust algorithm builds basis functions adaptively, sampling from candidate knot locations, signs, interaction degrees, and accepting or rejecting the basis functions using a Reversible-Jump Metropolis Hastings algorithm to sample from the posterior.
+where $\tau^2$ is the prior variance for $\beta_{i}$.
+
+
+## Reversible-Jump Markov Chain Monte Carlo (RJ-MCMC)
+
+Like Gaussian BMARS, the robust algorithm builds basis functions adaptively, sampling from candidate knot locations, signs, interaction degrees, and accepting or rejecting the basis functions using a RJ-MCMC algorithm to sample from the full posterior.
+
+RJ-MCMC is an generalization of the traditional Metropolis-Hastings algorithm in the sense that RJ-MCMC allows for parameter dimension change, allowing for simulation when the number of parameters is unknown. This is important for BMARS because we want to learn where the knots should be placed and how many basis functions to have in our model, along with the degree of interaction for our basis functions. There can exist multiple basis functions in a multivariate setting. We also want to know if certain basis functions should be added, deleted, or changed.
+
+The BMARS model has three possible move types, which are sampled using a discrete uniform:
+
+  - **Birth**: adding a basis function 
+
+  - **Death**: deleting a basis function
+
+  - **Change**: changing a knot, sign, and values of a basis function 
+
+Once the move type is sampled, the RJ-MCMC algorithm is used to determine acceptance of that move type.
 
 Our acceptance ratio $\alpha$ is denoted by
-
 
 \begin{equation}
 \label{TBD}
@@ -178,12 +207,56 @@ Our acceptance ratio $\alpha$ is denoted by
 \right\rbrace
 \end{equation}
 
+where $\theta'$ represents the candidate model parameters and $\theta$ represent the current state model parameters, $L$ is the Gaussian likelihood, $p$ is the prior, and $S$ is the proposal to jump from one model to another. 
+
+Section [3](#birth) details the RJ-MCMC algorithm for the birth step in detail, and the death and change steps are very similar.
+
+## Gibbs Sampling 
+
+Once the basis function move type is complete, the model parameter values can then be sampled using Gibbs Sampling, since the full conditionals are all closed-form.
+
+\pagebreak
+
+# Birth Step {#birth}
+
+## Likelihood Function
+
+Estimate (\ref{9}) allows us to achieve our t-distributed likelihood function for the birth step: 
+
+\begin{equation}
+\label{10}
+(\tau^2)^{\frac{M+1}{2}} |V|^{-1/2} ~\left|(X^tW^{-1}X +{\tau^{-2}} I)^{-1}\right|^{-1/2} exp\bigg\lbrace -\frac{1}{2}\big(y'V^{-1}y - \boldsymbol{\hat\beta}^t (X^tW^{-1}X +{\tau^{-2}} I)^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
+\end{equation}
+
+\begin{proof}
+After marginalizing out \boldsymbol\beta and \sigma^2, we have that our Likelihood L \propto exp\left( \right)
+
+\end{proof}
+
+\pagebreak
+
+# Simulation with `tbass()` {#tbass}
+
+We now demonstrate the capabilities of the `TBASS` package using the main command, `tbass()`. For all parameter values of this function, please refer to the help documentation by running `?tbass` after loading the package.\newline
+
+**NOTE**: At this time, the package `mnormt` is REQUIRED in order to use `TBASS`. Please run `install.packages("mnormt")` to install the package. This dependency will be removed when the package is updated further. No other dependencies are required.\newline
+
+We begin by loading in the package and setting the seed for reproducibility. The package can be installed using the following command: `devtools::install_github("aashen12/TBASS")`.\newline
+
+```{r,echo=TRUE}
+set.seed(12)
+library(TBASS)
+```
 
 
+## Friedman Function
 
+Our first example fits the Robust BMARS model to the infamous Friedman Function (reference here):
 
-
-
+\begin{equation}
+\label{???}
+10 ~sin( x_1 ~x_2~ \pi) ~+~ 20(x_3 - 0.5)^2 + 10x_4 + 5x_5 
+\end{equation}
 
 
 
