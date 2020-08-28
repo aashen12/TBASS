@@ -26,15 +26,15 @@ fig <- 1
 
 ## Abstract
 
-The R package `TBASS` is an extension of the package `BASS` created by Francom et. al (2016). The package is used to fit a Bayesian   adaptive spline surface to a dataset that follows a Student's t-distribution or has outliers. Much of the framework for `TBASS` is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done from Denison, Mallick, and Smith (1998). By including a more robust model, a dataset with outliers can now be accurately fit using BMARS, without the possibility of overfitting or variance inflation.\newline
+The R package `TBASS` is an extension of the `BASS` package created by Francom et. al (2016). The package is used to fit a Bayesian   adaptive spline surface to a dataset that follows a Student's t-distribution or has outliers. Much of the framework for `TBASS` is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done from Denison, Mallick, and Smith (1998). By including a more robust model, a dataset with outliers can now be accurately fit using BMARS, without the possibility of overfitting or variance inflation.\newline
   
-**Keywords**: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis
+**Keywords**: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis\newline
 
 ------------------------
 
 # 1 Introduction
 
-Splines are a commonly used regression tool for fitting nonlinear data. Splines can act as basis functions, where the basis functions act as the $X$ matrix. The simplest way to create the ith basis functions can be represented as
+Splines are a commonly used regression tool for fitting nonlinear data. Splines can act as basis functions, where all of the basis combine to form the $\boldsymbol X$ matrix. The simplest way to create the ith basis functions can be represented as
 
 \begin{equation}
 \label{1}
@@ -81,16 +81,102 @@ t <- c(0, 0.525, 0.875); generate_spline(t)
 
 \pagebreak
 
-# 2 Bayesian Multivariate Adaptive Splines
+# 2 Robust BMARS 
 
-We want to extend the theory behind frequentist univariate spline regression to a multivariate Bayesian framework. 
+## 2.1 Overview
+
+We want to extend the theory behind frequentist univariate spline regression to a multivariate Bayesian framework. Moreover, we want to be able to fit nonlinear data that has outliers. We adopt the Gaussian BMARS framework based on the standard framework used by Dennison et al. (1998) and Francom (2018) when deriving our likelihood and full conditional distributions for the parameters. 
+
+In the presence of outliers, Gaussian BMARS will attempt to capture the excess noise by adding basis functions (overfitting) or inflating the variance term ($\sigma^2$). The Robust BMARS model accounts for this sensitivity to outliers by avoiding overfitting or variance inflation when the degrees of freedom ($\nu$) are low. When $\nu$ is high, the t-distribution closely mimics a normal distribution, so the Robust BMARS model behaves in a similar way.
+
+## 2.2 Auxiliary Variables
+
+In creating the Robust BMARS model, we introduce new auxiliary parameters based on the work done by Gelman et al. (2014).  
+
+Similar to Gaussian BMARS, we let $y_i$ be our dependent variable and $\mathbf{x}_i$ be our independent variable representing a single basis function with $i = 1,...,n$. Without loss of generality, all independent variables $\mathbf{x}_i$ are scaled from zero to one (Francom, 2016).
+
+In the robust case, $y_i$ is modeled as
+
+\begin{equation}
+\label{2}
+\boldsymbol {y} = \boldsymbol{X\beta} + \epsilon, \quad \epsilon \sim t_{\nu}\left(0, ~ \sigma^2 \boldsymbol{V}^{-1}\right)
+\end{equation}
+
+and
+
+\begin{equation}
+\label{3}
+y_i | V_i \sim \mathcal{N}\left(\boldsymbol{X\beta}, ~ \frac{\sigma^2}{V_i}\right)
+\end{equation}
+
+where $\boldsymbol X$ represents the matrix of basis functions by column, $\boldsymbol \beta$ is the vector of regression coefficients, $\epsilon$ is the error term,  $\nu$ represents the degrees of freedom in a Student's t-distribubtion, $\sigma^2$ is the variance term for $y_i$, and $V^{-1} = diag(1/V_1...1/V_n)$ where $V_i$ is the variance estimate of $y_i$.
+
+The basis functions themselves are produced the same way as in the `BASS` package by Francom, et al. (2016).
+
+## 2.3 Priors
+
+We assume an Inverse-Gamma prior for $\sigma^2$ with default shape $\gamma_1 = 0$ and default rate $\gamma_2=0$, and a Gamma prior with shape and rate $\frac{\nu}{2}$ for $V_i$, such that
+
+\begin{equation}
+\label{4}
+\sigma^2 \sim IG~(\gamma_1,~\gamma_2)
+\end{equation}
+
+\begin{equation}
+\label{5}
+V_i \sim \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg)
+\end{equation}
+
+From there, we obtain the full conditional of $V_i$ as
+
+\begin{equation}
+\label{6}
+V_i | \cdot \sim \Gamma\left\lbrace\frac{\nu + 1}{2},~ \frac{1}{2\sigma^2} \sum_{i=1}^{n}{(y - X\beta)^2}\right\rbrace
+\end{equation}
+
+For the parameter governing the number of basis functions $\lambda$, we have that 
+
+\begin{equation}
+\label{7}
+\lambda | \cdot \sim \Gamma\left( h_1 + M,~h_2+1\right)
+\end{equation}
+
+where $h_1 = h_2= 10$ are the default hyperparameters for $\lambda$ and $M$ is the current number of basis functions.
+
+It follows that $\lambda$ follows a gamma prior.
+ 
+## 2.4 Regression Coefficients
+
+Finally, our regression coefficients $\boldsymbol\beta$ follow a Gaussian prior such that
+
+\begin{equation}
+\label{8}
+\beta | \cdot \sim \mathcal{N} \left( 0,~\tau^2 \boldsymbol{I} \right)
+\end{equation}
 
 
+In the Student's t-distribution, we can marginalize the posterior for $\boldsymbol\beta$ and $\sigma^2$ to obtain the regression estimate $\boldsymbol{\hat{\beta}}$:
+
+\begin{equation}
+\label{9}
+\frac{1}{\sigma^2}
+\left( \frac{1}{\sigma^2} \boldsymbol{X'VX} + {\tau^{-2}}{\boldsymbol{I}} \right)^{-1} \boldsymbol{X' V}{\boldsymbol{y}}
+\end{equation}
+
+where $\tau^2$ is the prior variance for $\beta$.
+
+Like Gaussian BMARS, the robust algorithm builds basis functions adaptively, sampling from candidate knot locations, signs, interaction degrees, and accepting or rejecting the basis functions using a Reversible-Jump Metropolis Hastings algorithm to sample from the posterior.
+
+Our acceptance ratio $\alpha$ is denoted by
 
 
-
-
-
+\begin{equation}
+\label{TBD}
+\alpha = min\left\lbrace 
+1,\
+\frac{L(D|\theta') \ p(\theta')\ S(\theta'\rightarrow\theta)}{L(D|\theta)\ p(\theta) \ S(\theta\rightarrow\theta')} 
+\right\rbrace
+\end{equation}
 
 
 
