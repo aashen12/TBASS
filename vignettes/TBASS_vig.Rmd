@@ -18,7 +18,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  echo = FALSE,
+  echo = TRUE,
   comment = "#>"
 )
 ```
@@ -26,7 +26,6 @@ knitr::opts_chunk$set(
 ```{r setup, include=FALSE}
 library(TBASS)
 # rmarkdown::html_vignette
-fig <- 1
 ```
 
 ------------------------
@@ -44,7 +43,7 @@ The R package `TBASS` is an extension of the `BASS` package created by Francom e
 
 # Introduction
 
-Splines are a commonly used regression tool for fitting nonlinear data. Splines can act as basis functions, where all of the basis combine to form the $\boldsymbol X$ matrix. The simplest way to create the ith basis functions can be represented as
+Splines are a commonly used regression tool for fitting nonlinear data, univariate and multivariate. Splines can act as basis functions, where all of the basis functions combine to form the $\boldsymbol X$ matrix. The simplest way to create the ith basis functions can be represented as
 
 \begin{equation}
 \label{1}
@@ -55,17 +54,13 @@ Equation (\ref{1}) is used to calculate the ith column of the $X$ matrix of basi
 
 For example, given the nonlinear data shown in Figure 1 below, we can use (\ref{1}) to fit a spline model shown in Figure 2.
 
-```{r}
+```{r,echo=FALSE}
 n <- 300
 x <- seq(0,1,length.out=n)
 y <- sin(2 * pi * x^2) * 10 + rnorm(n)
-plot(x,y,main=paste0("Figure ",fig," : Univariate Nonlinear Data"))
-fig <- fig + 1
 ```
 
-\  
-
-```{r}
+```{r,echo=FALSE}
 generate_spline <- function(tvec, nknot = length(tvec)) {
   s <- sample(c(1), nknot, replace = TRUE)
   Bmat <- matrix(NA, nknot, length(x))
@@ -82,11 +77,16 @@ generate_spline <- function(tvec, nknot = length(tvec)) {
   pred <- predict(mod)
 
   
-  plot(x,y,main=paste0("Figure ",fig," : Univariate Spline Function"))
+  plot(x,y,main=paste0("Figure ",2," : Univariate Spline Function"))
   lines(x, pred, type = "l", lwd = 5, col="blue1")
   #list(basis=mBmat)
 }
-t <- c(0, 0.525, 0.875); generate_spline(t)
+t <- c(0, 0.525, 0.875)
+```
+
+```{r,echo=FALSE}
+plot(x,y,main=paste0("Figure ",1," : Univariate Nonlinear Data"))
+generate_spline(t)
 ```
 
 
@@ -100,7 +100,7 @@ We want to extend the theory behind frequentist univariate spline regression to 
 
 In the presence of outliers, Gaussian BMARS will attempt to capture the excess noise by adding basis functions (overfitting) or inflating the variance term ($\sigma^2$). The Robust BMARS model accounts for this sensitivity to outliers by avoiding overfitting or variance inflation when the degrees of freedom ($\nu$) are low. When $\nu$ is high, the t-distribution closely mimics a normal distribution, so the Robust BMARS model behaves in a similar way.
 
-The function used to fit the Robust BMARS model in the `TBASS` package is the `tbass()` command (see section [4](#tbass)). 
+The function used to fit the Robust BMARS model in the `TBASS` package is the `tbass()` command (see section [3](#tbass)). 
 
 ## Auxiliary Variables
 
@@ -112,14 +112,14 @@ In the robust case, $y_i$ is modeled as
 
 \begin{equation}
 \label{2}
-\boldsymbol {y} = \boldsymbol{X\beta} + \epsilon, \quad \epsilon \sim t_{\nu}\left(0, ~ \sigma^2 \boldsymbol{V}^{-1}\right)
+\boldsymbol {y} = X\boldsymbol{\beta} + \epsilon, \quad \epsilon \sim t_{\nu}\left(0, ~ \sigma^2 {V}^{-1}\right)
 \end{equation}
 
 and
 
 \begin{equation}
 \label{3}
-y_i | V_i \sim \mathcal{N}\left(\boldsymbol{X\beta}, ~ \frac{\sigma^2}{V_i}\right)
+y_i | V_i \sim \mathcal{N}\left(X\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right)
 \end{equation}
 
 where $\boldsymbol X$ represents the matrix of basis functions by column, $\boldsymbol \beta$ is the vector of regression coefficients, $\epsilon$ is the error term,  $\nu$ represents the degrees of freedom in a Student's t-distribubtion, $\sigma^2$ is the variance term for $y_i$, and $V^{-1} = diag(1/V_1...1/V_n)$ where $V_i$ is the variance estimate of $y_i$.
@@ -164,7 +164,7 @@ Finally, our regression coefficients $\boldsymbol\beta$ follow a Gaussian prior 
 
 \begin{equation}
 \label{8}
-\boldsymbol\beta | \cdot \sim \mathcal{N} \left( 0,~\tau^2 \boldsymbol{I} \right)
+\boldsymbol\beta | \cdot \sim \mathcal{N} \left( 0,~\tau^2 {I} \right)
 \end{equation}
 
 
@@ -174,7 +174,7 @@ In the Student's t-distribution, we can marginalize the posterior for $\boldsymb
 \label{9}
 \boldsymbol{\hat{\beta}} = 
 \frac{1}{\sigma^2}
-\left( \frac{1}{\sigma^2} \boldsymbol{X'VX} + {\tau^{-2}}{\boldsymbol{I}} \right)^{-1} \boldsymbol{X' V}{\boldsymbol{y}}
+\left( \frac{1}{\sigma^2} {X'VX} + {\tau^{-2}}{{I}} \right)^{-1} {X'}V{{y}}
 \end{equation}
 
 
@@ -182,17 +182,7 @@ where $\tau^2$ is the prior variance for $\beta_{i}$.
 
 ## Likelihood Function
 
-Estimate (\ref{9}) allows us to achieve our t-distributed likelihood function for the birth step: 
-
-\begin{equation}
-\label{like}
-(\tau^2)^{\frac{M+1}{2}} |V|^{-1/2} ~\left|(X^tV^{-1}X +{\tau^{-2}} I)^{-1}\right|^{-1/2} exp\bigg\lbrace -\frac{1}{2}\big(y'V^{-1}y - \boldsymbol{\hat\beta}^t (X^tV^{-1}X +{\tau^{-2}} I)^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
-\end{equation}
-
-\  
- 
-\begin{proof}
-After marginalizing out $\boldsymbol\beta$ and $\sigma^2$, we can simplify our Likelihood $L$ to
+Estimate (\ref{9}) allows us to achieve our t-distributed likelihood function for the birth step. After marginalizing out $\boldsymbol\beta$ and $\sigma^2$, we can simplify our Likelihood $L$ to
 
 $$
 L \propto \left(\tau^2\right)^{-\frac{M+1}{2}}~ |V|^{-1/2}~ \left|H^{-1}\right|^{-1/2}exp\left(-\frac{1}{2}y'V^{-1}y \right) exp\left(-\frac{1}{2}\boldsymbol\beta'H^{-1}\boldsymbol\beta - 2\boldsymbol\beta'X'V^{-1}y\right)
@@ -217,13 +207,12 @@ exp\left\lbrace-\frac{1}{2}\left[\left(\boldsymbol\beta -\boldsymbol{\hat{\beta}
 \end{aligned} 
 $$
 
-This is likelihood for the current model with $M$ basis functions.\newline
+\begin{equation}
+\label{like}
+\Rightarrow L(M) = (\tau^2)^{\frac{M+1}{2}} |V|^{-1/2} ~\left|(X^tV^{-1}X +{\tau^{-2}} I)^{-1}\right|^{-1/2} exp\bigg\lbrace -\frac{1}{2}\big(y'V^{-1}y - \boldsymbol{\hat\beta}^t (X^tV^{-1}X +{\tau^{-2}} I)^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
+\end{equation}
 
-\end{proof}
-
-
-\pagebreak
-
+Equation (\ref{like}) is the likelihood for the current state model with $M$ basis functions.\newline
 
 
 ## Reversible-Jump Markov Chain Monte Carlo (RJ-MCMC)
@@ -281,6 +270,30 @@ where the subscript $c$ denotes the candidate move step of the algorithm (a birt
 
 The death is very similar to the birth step, with a candidate likelihood of $L(M-1)$, and there is no dimension change in the change step.
 
+## Gibbs Sampling 
+
+Once the basis function move type is complete, the model parameter values $\lambda$, $\boldsymbol{\beta}$, $V_i$ and $\sigma^2$ can then be sampled using Gibbs Sampling, since the full conditionals are all closed-form.
+
+The full conditionals are of the following form:
+
+\begin{equation}
+\lambda | \cdot\sim \Gamma\big(h_1 + M, ~h_2 + 1\big)
+\end{equation}
+
+\begin{equation}
+\boldsymbol{\beta} | \cdot \sim \mathcal{N}\left\lbrace \boldsymbol{\hat\beta}, \left(X'V^{-1}X + \tau^{-2}I\right) \right\rbrace
+\end{equation}
+
+where $\boldsymbol{\hat\beta}$ is denoted in (\ref{9}).\newline
+
+\begin{equation}
+V_i | \cdot \sim \Gamma\left\lbrace\frac{\nu + 1}{2},~ \frac{1}{2\sigma^2} \sum_{i=1}^{n}{(y - X\beta)^2}\right\rbrace
+\end{equation}
+
+\begin{equation}
+\sigma^2 | \cdot\sim IG\bigg(\gamma_1 + \frac{n}{2}, ~\gamma_2 + \frac{1}{2} (\boldsymbol y - \boldsymbol{X\beta})^t (\boldsymbol y - \boldsymbol{X\beta})  \bigg)
+\end{equation}
+
 \pagebreak
 
 # Simulation with `tbass()` {#tbass}
@@ -299,12 +312,113 @@ library(TBASS)
 
 ## Friedman Function
 
-Our first example fits the Robust BMARS model to the infamous Friedman Function (reference here):
+Our first example fits the Robust BMARS model to the infamous Friedman Function (Friedman, 1991):
 
 \begin{equation}
 \label{fried}
 10 ~sin( x_1 ~x_2~ \pi) ~+~ 20(x_3 - 0.5)^2 + 10x_4 + 5x_5 
 \end{equation}
+
+In R:\newline
+
+```{r,echo=TRUE}
+f <- function(x){
+  10*sin(pi*x[,1]*x[,2]) + 20*(x[,3]-.5)^2 + 10*x[,4] + 5*x[,5]
+} 
+```
+
+We set our true value of $\sigma = 1$ and attempt to capture the same variability in Robust BMARS\newline
+
+```{r, echo=TRUE}
+sigma <- 1 # TRUE noise sd
+n <- 1000 # number of observations
+x <- matrix(runif(n*5), nrow = n, ncol = 5)
+y <- rnorm(n, mean = f(x), sd = sigma)
+```
+
+We then add extra noise to simulate a dataset with outliers, and categorize them for plotting later. \newline
+
+```{r}
+ind <- sample(n,size=10) # convert 10 points to outliers
+y[ind] <- rnorm(5, f(x[ind,]), 15)
+
+col <- rep(1,n) # for coloring these points in a later plot
+col[ind] <- 2
+```
+
+From there, we can run the `tbass()` command with 10000 MCMC iterations. Our first simulation is with $\nu = 10$ degrees of freedom to simulate a t-distribution with thicker tails.\newline
+
+```{r,cache=TRUE}
+nmcmc <- 10000 #number of iterations
+tb <- tbass(x, y, nu = 10, nmcmc = nmcmc, verbose = FALSE)
+```
+
+
+## Results
+
+
+### Overfitting and Prediction
+
+We begin by plotting the number of basis functions throughout the entire simulation.
+
+```{r}
+fig <- 3
+plot(tb$nbasis, type = "l",
+     main = paste0("Figure ", fig, ": Trace plot of number of basis functions"))
+```
+
+We see that there are 10 basis functions, indicating that there was no overfitting in the `TBASS` model.
+
+We then assess the accuracy of our predicted y values ($X\beta$) vs the actual y-values.
+
+```{r}
+fig <- fig + 1
+plot(tb$X %*% tb$b, y, col = col,
+main=paste0("Figure ", fig, ": Predicted vs Actual Values"), 
+xlab = "Predicted y-values")
+abline(0,1,col="blue2",lwd=2.5)
+```
+
+We see that the prediction is quite accurate with respect to the outliers.
+
+### Gibbs Results
+
+We set a burn-in value to the first 10% of samples.
+
+```{r}
+burn_final <- nmcmc/10
+burn <- 1:burn_final
+```
+
+From there, we plot our $\sigma$ values to ensure there was no variance inflation.
+
+```{r}
+fig <- fig + 1
+plot(sqrt(tb$s2[-burn]), type = "l",
+    main = paste0("Figure ", fig, ": Trace plot of sigma"))
+```
+
+From this plot, we see that our simulated $\sigma$ values are close to $1$, which matches our true value of $\sigma$ when we generated our data.
+
+We then plot our $\frac{1}{V_i}$ values to see if the outliers are accounted for.
+
+```{r}
+fig <- fig + 1
+matplot(sqrt(1/tb$v[seq(burn_final,nmcmc,100),]), type="l",
+  main = paste0("Figure ",fig, ": Plot of V_i"))
+```
+
+We see that the peaks in $V_i$ are accounting for the outliers, while the majority of $V_i$ values are in the bottom portion of the plot.
+
+## Comparison with `BASS`
+
+
+
+
+
+
+
+
 
 
 
