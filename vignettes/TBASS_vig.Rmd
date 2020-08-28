@@ -180,6 +180,51 @@ In the Student's t-distribution, we can marginalize the posterior for $\boldsymb
 
 where $\tau^2$ is the prior variance for $\beta_{i}$.
 
+## Likelihood Function
+
+Estimate (\ref{9}) allows us to achieve our t-distributed likelihood function for the birth step: 
+
+\begin{equation}
+\label{like}
+(\tau^2)^{\frac{M+1}{2}} |V|^{-1/2} ~\left|(X^tV^{-1}X +{\tau^{-2}} I)^{-1}\right|^{-1/2} exp\bigg\lbrace -\frac{1}{2}\big(y'V^{-1}y - \boldsymbol{\hat\beta}^t (X^tV^{-1}X +{\tau^{-2}} I)^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
+\end{equation}
+
+\  
+ 
+\begin{proof}
+After marginalizing out $\boldsymbol\beta$ and $\sigma^2$, we can simplify our Likelihood $L$ to
+
+$$
+L \propto \left(\tau^2\right)^{-\frac{M+1}{2}}~ |V|^{-1/2}~ \left|H^{-1}\right|^{-1/2}exp\left(-\frac{1}{2}y'V^{-1}y \right) exp\left(-\frac{1}{2}\boldsymbol\beta'H^{-1}\boldsymbol\beta - 2\boldsymbol\beta'X'V^{-1}y\right)
+$$
+
+where $H = (X'V^{-1}X + \tau^{-2}I)$.\newline
+
+We then complete the square on the first exponential term using $y~'V^{-1}X~ H^{-1}~X'V^{-1}y $ which simplifies to $\boldsymbol{\hat{\beta}}' H \boldsymbol{\hat\beta}$ since $X'V^{-1}y = H\hat\beta$ from (\ref{9}).\newline
+
+From there, we have that
+
+$$
+\begin{aligned}
+L(M) &\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |V|^{-1/2}~exp\left(-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' H \boldsymbol{\hat\beta}\right)\right)
+exp\left(-\frac{1}{2}\left(\boldsymbol\beta'H\boldsymbol\beta - \boldsymbol\beta'H\boldsymbol{\hat{\beta}} - \boldsymbol{\hat{\beta}}'H\boldsymbol\beta + \boldsymbol{\hat{\beta}}'H\boldsymbol{\hat{\beta}} \right)\right)\\
+&\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |V|^{-1/2}~exp\left(-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' H \boldsymbol{\hat\beta}\right)\right)
+exp\left\lbrace-\frac{1}{2}\left[\left(\boldsymbol\beta -\boldsymbol{\hat{\beta}} \right)'H\left(\boldsymbol\beta -\boldsymbol{\hat{\beta}}\right)\right]\right\rbrace\\
+&\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |V|^{-1/2}~ exp\left(-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' H \boldsymbol{\hat\beta}\right)\right)~
+\mathcal N\left(\boldsymbol\beta \mid \boldsymbol{\hat\beta}, ~H^{-1}\right) \left|H^{-1}\right|^{-1/2}\left(2\pi\right)^{\frac{M+1}{2}}\\
+&\propto \left(\tau^2\right)^{-\frac{M+1}{2}}  |V|^{-1/2}~ \left|H^{-1}\right|^{-1/2} exp\left\lbrace-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' H \boldsymbol{\hat\beta}\right)\right\rbrace\\
+&\propto \left(\tau^2\right)^{-\frac{M+1}{2}}  |V|^{-1/2}~ \left|H^{-1}\right|^{-1/2} exp\left\lbrace-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' \left(X'V^{-1}X + \tau^{-2}I\right) \boldsymbol{\hat\beta}\right)\right\rbrace
+\end{aligned} 
+$$
+
+This is likelihood for the current model with $M$ basis functions.\newline
+
+\end{proof}
+
+
+\pagebreak
+
+
 
 ## Reversible-Jump Markov Chain Monte Carlo (RJ-MCMC)
 
@@ -209,29 +254,32 @@ Our acceptance ratio $\alpha$ is denoted by
 
 where $\theta'$ represents the candidate model parameters and $\theta$ represent the current state model parameters, $L$ is the Gaussian likelihood, $p$ is the prior, and $S$ is the proposal to jump from one model to another. 
 
-Section [3](#birth) details the RJ-MCMC algorithm for the birth step in detail, and the death and change steps are very similar.
+Section [2.7](#birth) details the RJ-MCMC algorithm for the birth step in detail, and the death and change steps are very similar.
 
-## Gibbs Sampling 
 
-Once the basis function move type is complete, the model parameter values can then be sampled using Gibbs Sampling, since the full conditionals are all closed-form.
+## Birth Step {#birth}
 
-\pagebreak
+Since a basis function is added for the birth step, we have that
 
-# Birth Step {#birth}
+$$
+\begin{aligned}
+L(M+1) &\propto 
+\left(\tau^2\right)^{-\frac{M+2}{2}}  |V|^{-1/2}~ \left|H^{-1}\right|^{-1/2} exp\left\lbrace-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' \left(X'V^{-1}X + \tau^{-2}I\right) \boldsymbol{\hat\beta}\right)\right\rbrace
+\end{aligned} 
+$$
 
-## Likelihood Function
+Using (\ref{like}), The ratio $\frac{L(M+1)}{L(M)}$ is then represented as
 
-Estimate (\ref{9}) allows us to achieve our t-distributed likelihood function for the birth step: 
 
 \begin{equation}
-\label{10}
-(\tau^2)^{\frac{M+1}{2}} |V|^{-1/2} ~\left|(X^tW^{-1}X +{\tau^{-2}} I)^{-1}\right|^{-1/2} exp\bigg\lbrace -\frac{1}{2}\big(y'V^{-1}y - \boldsymbol{\hat\beta}^t (X^tW^{-1}X +{\tau^{-2}} I)^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
+\label{12}
+\frac{L(M+1)}{L(M)} = \frac{\left(\tau^2\right)^{-\frac{M+2}{2}}  |V|^{-1/2}~ \left|H^{-1}_c\right|^{-1/2} exp\left\lbrace-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}'_{c} \left(X'_{c}V^{-1}X_{c} + \tau^{-2}I_{c}\right) \boldsymbol{\hat\beta}_{c}\right)\right\rbrace}
+{\left(\tau^2\right)^{-\frac{M+1}{2}}  |V|^{-1/2}~ \left|H^{-1}\right|^{-1/2} exp\left\lbrace-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' \left(X'V^{-1}X + \tau^{-2}I\right) \boldsymbol{\hat\beta}\right)\right\rbrace}\\\\
 \end{equation}
 
-\begin{proof}
-After marginalizing out \boldsymbol\beta and \sigma^2, we have that our Likelihood L \propto exp\left( \right)
+where the subscript $c$ denotes the candidate move step of the algorithm (a birth step in this case).\newline
 
-\end{proof}
+The death is very similar to the birth step, with a candidate likelihood of $L(M-1)$, and there is no dimension change in the change step.
 
 \pagebreak
 
@@ -254,7 +302,7 @@ library(TBASS)
 Our first example fits the Robust BMARS model to the infamous Friedman Function (reference here):
 
 \begin{equation}
-\label{???}
+\label{fried}
 10 ~sin( x_1 ~x_2~ \pi) ~+~ 20(x_3 - 0.5)^2 + 10x_4 + 5x_5 
 \end{equation}
 
