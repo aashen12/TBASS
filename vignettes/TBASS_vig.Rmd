@@ -19,7 +19,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   echo = TRUE,
-  comment = "#>"
+  comment = "# >"
 )
 ```
 
@@ -55,6 +55,7 @@ Equation (\ref{1}) is used to calculate the ith column of the $X$ matrix of basi
 For example, given the nonlinear data shown in Figure 1 below, we can use (\ref{1}) to fit a spline model shown in Figure 2.
 
 ```{r,echo=FALSE}
+set.seed(12)
 n <- 300
 x <- seq(0,1,length.out=n)
 y <- sin(2 * pi * x^2) * 10 + rnorm(n)
@@ -250,12 +251,12 @@ Section [2.7](#birth) details the RJ-MCMC algorithm for the birth step in detail
 
 Since a basis function is added for the birth step, we have that
 
-$$
-\begin{aligned}
-L(M+1) &\propto 
+
+\begin{equation}
+L(M+1) \propto 
 \left(\tau^2\right)^{-\frac{M+2}{2}}  |V|^{-1/2}~ \left|H^{-1}\right|^{-1/2} exp\left\lbrace-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' \left(X'V^{-1}X + \tau^{-2}I\right) \boldsymbol{\hat\beta}\right)\right\rbrace
-\end{aligned} 
-$$
+\end{equation} 
+
 
 Using (\ref{like}), The ratio $\frac{L(M+1)}{L(M)}$ is then represented as
 
@@ -266,9 +267,11 @@ Using (\ref{like}), The ratio $\frac{L(M+1)}{L(M)}$ is then represented as
 {\left(\tau^2\right)^{-\frac{M+1}{2}}  |V|^{-1/2}~ \left|H^{-1}\right|^{-1/2} exp\left\lbrace-\frac{1}{2}\left(y'V^{-1}y - \boldsymbol{\hat{\beta}}' \left(X'V^{-1}X + \tau^{-2}I\right) \boldsymbol{\hat\beta}\right)\right\rbrace}\\\\
 \end{equation}
 
-where the subscript $c$ denotes the candidate move step of the algorithm (a birth step in this case).\newline
+where the subscript $c$ denotes the candidate move type of the algorithm (a birth step in this case).\newline
 
 The death is very similar to the birth step, with a candidate likelihood of $L(M-1)$, and there is no dimension change in the change step.
+
+The RJ-MCMC algorithm calculates the likelihoods, priors, proposals, and acceptance ratios all on the log scale.
 
 ## Gibbs Sampling 
 
@@ -281,7 +284,7 @@ The full conditionals are of the following form:
 \end{equation}
 
 \begin{equation}
-\boldsymbol{\beta} | \cdot \sim \mathcal{N}\left\lbrace \boldsymbol{\hat\beta}, \left(X'V^{-1}X + \tau^{-2}I\right) \right\rbrace
+\boldsymbol{\beta} | \cdot \sim \mathcal{N}\bigg( \boldsymbol{\hat\beta}, \left(X'V^{-1}X + \tau^{-2}I\right) \bigg)
 \end{equation}
 
 where $\boldsymbol{\hat\beta}$ is denoted in (\ref{9}).\newline
@@ -316,7 +319,7 @@ Our first example fits the Robust BMARS model to the infamous Friedman Function 
 
 \begin{equation}
 \label{fried}
-10 ~sin( x_1 ~x_2~ \pi) ~+~ 20(x_3 - 0.5)^2 + 10x_4 + 5x_5 
+10 ~sin(  \pi x_1 x_2) ~+~ 20(x_3 - 0.5)^2 ~+~ 10x_4 ~+~ 5x_5 
 \end{equation}
 
 In R:\newline
@@ -394,13 +397,13 @@ From there, we plot our $\sigma$ values to ensure there was no variance inflatio
 
 ```{r}
 fig <- fig + 1
-plot(sqrt(tb$s2[-burn]), type = "l",
-    main = paste0("Figure ", fig, ": Trace plot of sigma"))
+plot(tb$s2[-burn], type = "l",
+    main = paste0("Figure ", fig, ": TBASS Variance Trace Plot"))
 ```
 
-From this plot, we see that our simulated $\sigma$ values are close to $1$, which matches our true value of $\sigma$ when we generated our data.
+From this plot, we see that our simulated $\sigma^2$ values are close to $1$, which matches our true value of $\sigma^2$ when we generated our data.
 
-We then plot our $\frac{1}{V_i}$ values to see if the outliers are accounted for.
+We then plot our $\frac{1}{V_i}$ values to see if the outliers are accounted for. We thin every 100 iterations after the burn-in.
 
 ```{r}
 fig <- fig + 1
@@ -412,10 +415,23 @@ We see that the peaks in $V_i$ are accounting for the outliers, while the majori
 
 ## Comparison with `BASS`
 
+To account for the differences in behavior for Robust BMARS (`TBASS`) and Gaussian BMARS (`BASS`), we compare our results from TBASS to the output from BASS, which assumes a Gaussian likelihood.
+
+```{r, cache = TRUE}
+library(BASS)
+b <- bass(x,y) # automatically runs 10000 nmcmc iterations
+```
 
 
+### BASS Variance
 
+```{r}
+fig <- fig + 1
+plot(b$s2, type = "l",
+     main = paste0("Figure ", fig, ": BASS Variance Trace Plot"))
+```
 
+We see that the $\sigma^2$ from Gaussian BMARS is over two times as large as the $\sigma^2$ from `TBASS`, indicating that Gaussian BMARS is more sensitive to outliers and will increase $\sigma^2$ when outliers are present.  
 
 
 
