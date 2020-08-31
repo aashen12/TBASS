@@ -362,17 +362,18 @@ tb <- tbass(x, y, nu = 10, nmcmc = nmcmc, verbose = FALSE)
 
 ### Overfitting and Prediction
 
-We begin by plotting the number of basis functions throughout the entire simulation.
+We begin by plotting the number of basis functions throughout the entire simulation in Figure 3.
 
 ```{r}
 fig <- 3
 plot(tb$nbasis, type = "l",
-     main = paste0("Figure ", fig, ": Trace plot of number of basis functions"))
+     main = paste0("Figure ", fig, ": Trace plot of number of basis functions"),
+     xlab = "nmcmc", ylab = "Number of Basis Functions")
 ```
 
 We see that there are 10 basis functions, indicating that there was no overfitting in the `TBASS` model.
 
-We then assess the accuracy of our predicted y values ($X\beta$) vs the actual y-values.
+We then assess the accuracy of our predicted y values ($X\beta$) vs the actual y-values in Figure 4.
 
 ```{r}
 fig <- fig + 1
@@ -393,22 +394,24 @@ burn_final <- nmcmc/10
 burn <- 1:burn_final
 ```
 
-From there, we plot our $\sigma$ values to ensure there was no variance inflation.
+From there, we plot our $\sigma$ values to ensure there was no variance inflation in Figure 5.
 
 ```{r}
 fig <- fig + 1
 plot(tb$s2[-burn], type = "l",
-    main = paste0("Figure ", fig, ": TBASS Variance Trace Plot"))
+    main = paste0("Figure ", fig, ": TBASS Variance Trace Plot"),
+    xlab = "nmcmc", ylab = "variance")
 ```
 
 From this plot, we see that our simulated $\sigma^2$ values are close to $1$, which matches our true value of $\sigma^2$ when we generated our data.
 
-We then plot our $\frac{1}{V_i}$ values to see if the outliers are accounted for. We thin every 100 iterations after the burn-in.
+We then plot our $\frac{1}{V_i}$ values to see if the outliers are accounted for. We thin every 100 iterations after the burn-in. See Fogure 6.
 
 ```{r}
 fig <- fig + 1
 matplot(sqrt(1/tb$v[seq(burn_final,nmcmc,100),]), type="l",
-  main = paste0("Figure ",fig, ": Plot of V_i"))
+  main = paste0("Figure ",fig, ": TBASS Trace Plot of V_i"),
+  xlab = "nmcmc", ylab = "V_i")
 ```
 
 We see that the peaks in $V_i$ are accounting for the outliers, while the majority of $V_i$ values are in the bottom portion of the plot.
@@ -424,10 +427,13 @@ b <- bass(x,y) # automatically runs 10000 nmcmc iterations
 
 ### BASS Basis Functions
 
+Figure 7 shows that there are also 10 basis functions once the algorithm is complete, similar to TBASS.
+
 ```{r}
 fig <- fig + 1
 plot(b$nbasis, type = "l",
-     main = paste0("Figure ", fig, ": BASS Basis Function Count"))
+     main = paste0("Figure ", fig, ": BASS Basis Function Count"),
+     xlab = "nmcmc", ylab = "Number of Basis Functions")
 ```
 
 
@@ -436,7 +442,8 @@ plot(b$nbasis, type = "l",
 ```{r}
 fig <- fig + 1
 plot(b$s2, type = "l",
-     main = paste0("Figure ", fig, ": BASS Variance Trace Plot"))
+     main = paste0("Figure ", fig, ": BASS Variance Trace Plot"),
+     xlab = "nmcmc", ylab = "variance")
 ```
 
 We see that the $\sigma^2$ from Gaussian BMARS is over two times as large as the $\sigma^2$ from `TBASS`, indicating that Gaussian BMARS is more sensitive to outliers and will increase $\sigma^2$ when outliers are present.  
