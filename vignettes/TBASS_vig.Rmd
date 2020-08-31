@@ -422,6 +422,14 @@ library(BASS)
 b <- bass(x,y) # automatically runs 10000 nmcmc iterations
 ```
 
+### BASS Basis Functions
+
+```{r}
+fig <- fig + 1
+plot(b$nbasis, type = "l",
+     main = paste0("Figure ", fig, ": BASS Basis Function Count"))
+```
+
 
 ### BASS Variance
 
