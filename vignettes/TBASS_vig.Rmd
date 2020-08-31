@@ -490,11 +490,11 @@ plot(b$s2, type = "l",
      xlab = "nmcmc", ylab = "variance")
 ```
 
-We see that the $\sigma^2$ from Gaussian BMARS is over two times as large as the $\sigma^2$ from `TBASS`, indicating that Gaussian BMARS is more sensitive to outliers and will increase $\sigma^2$ when outliers are present.
+We see that the $\sigma^2$ from Gaussian BMARS is over two times as large as the $\sigma^2$ from `TBASS`, indicating that Gaussian BMARS is more sensitive to outliers and will inflate $\sigma^2$ when outliers are present.
 
 # Conclusion
 
-We constructed a generalized version of Gaussian Bayesian Multivariate Adaptive Regression to accommodate data with outliers. This framework provides powerful and accurate parameter estimation. The R package `TBASS` adopts this framework from the original `BASS` package. These two model has been tested and compared to show their differences and demonstrate how a low value of $\nu$ can emulate the results from a Student's t-distribution.     
+We constructed a generalized version of Gaussian Bayesian Multivariate Adaptive Regression to accommodate data with outliers or data that is non-Gaussian. This framework provides reliable and accurate parameter estimation. The R package `TBASS` adopts this framework from the original `BASS` package. These two models have been tested and compared to show their differences and demonstrate how a low value of $\nu$ can emulate the results from a Student's t-distribution.     
 
 # References
 
