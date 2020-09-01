@@ -78,7 +78,7 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
   lam[1]<-1
   X.curr<-matrix(rep(1,n))
 
-  d.curr<-getdC(X.curr,v[1,],s2[1],tau2,y)
+  d.curr<-getdC(X.curr,v[1,],s2[1],tau2,y,chol,chol2inv,diag)
 
   count<-c(0,0,0) # count how many times we accept birth, death, change
   beta[1,1]<-d.curr$bhat
@@ -107,7 +107,7 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
       vars.cand<-sample(p,nint.cand,replace = F) # variables to use in new basis function
       basis.cand<-makeBasis(signs.cand,vars.cand,knots.cand,Xt) # make the new basis function
       X.cand<-cbind(X.curr,basis.cand) # add the new basis function to the basis functions we already have
-      d.cand<-getdC(X.cand,v[i-1,],s2[i-1],tau2,y)
+      d.cand<-getdC(X.cand,v[i-1,],s2[i-1],tau2,y,chol,chol2inv,diag)
 
       llik.alpha <- .5*log(1/tau2) + d.cand$d - d.curr$d # calculate the log likelihood ratio
       lprior.alpha <- ( # log prior ratio
@@ -146,7 +146,7 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
     } else if(move.type=='death'){
       tokill<-sample(nbasis[i-1],1) # which basis function we will delete
       X.cand<-X.curr[,-(tokill+1),drop=F] # +1 to skip the intercept
-      d.cand <- getdC(X.cand,v[i-1,],s2[i-1],tau2,y)
+      d.cand <- getdC(X.cand,v[i-1,],s2[i-1],tau2,y,chol,chol2inv,diag)
 
       llik.alpha <- -.5*log(1/tau2) + d.cand$d - d.curr$d
       lprior.alpha <- (
@@ -200,7 +200,7 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
       X.cand<-X.curr
       X.cand[,tochange+1]<-basis # +1 for intercept
 
-      d.cand <- getdC(X.cand,v[i-1,],s2[i-1],tau2,y)
+      d.cand <- getdC(X.cand,v[i-1,],s2[i-1],tau2,y,chol,chol2inv,diag)
 
       llik.alpha <- d.cand$d - d.curr$d
 
@@ -225,7 +225,7 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
     v[i,]<-rgamma(n,(nu+1)/2,nu/2 + .5/s2[i-1]*res^2)
     s2[i]<-1/rgamma(1,n/2+g1,rate=g2+.5*sum(v[i,]*res^2))
 
-    d.curr<-getdC(X.curr,v[i,],s2[i],tau2,y)
+    d.curr<-getdC(X.curr,v[i,],s2[i],tau2,y,chol,chol2inv,diag)
 
     if(verbose == TRUE) {
       if(i%%ticker==0) {
