@@ -34,11 +34,11 @@ library(TBASS)
 
 \begin{abstract}
 
-The R package TBASS is an extension of the BASS package created by Francom and Sansó (2019). The package is used to fit a Bayesian   adaptive spline surface to a dataset that either follows a Student's t-distribution or has outliers. Much of the framework for TBASS is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done by Denison, Mallick, and Smith (1998). By including a more robust generalization, a dataset with outliers can now be accurately fit using the BMARS model, without the possibility of overfitting or variance inflation.\newline
+The R package TBASS is an extension of the BASS package created by Francom and Sansó (2019). The package is used to fit a Bayesian multivariate adaptive spline to a dataset that either follows a Student's t-distribution or has outliers. Much of the framework for TBASS is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done by Denison, Mallick, and Smith (1998). The spline function is fit using a Reversible-Jump Markov Chain Monte Carlo algorithm, followed by Gibbs Sampling. By including this more robust generalization, a dataset with outliers can accurately fit using the BMARS model, without the possibility of overfitting or variance inflation.\newline
 
 \end{abstract}
 
-**Keywords**: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis
+***Keywords***: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis
 
 
 ------------------------
@@ -103,30 +103,7 @@ We want to extend the theory behind frequentist univariate spline regression to 
 
 In the presence of outliers, Gaussian BMARS will attempt to capture the excess noise by either adding basis functions (overfitting) or inflating the variance term ($\sigma^2$). The Robust BMARS model accounts for this sensitivity to outliers by avoiding overfitting or variance inflation when the degrees of freedom ($\nu$) are low. When $\nu$ is high, the t-distribution closely mimics a normal distribution, so the Robust BMARS model behaves in a similar way.
 
-The function used to fit the Robust BMARS model in the `TBASS` package is the `tbass()` command (see section [3](#tbass)). 
-
-## Priors
-
-We assume an Inverse-Gamma prior for $\sigma^2$ with default shape $\gamma_1 = 0$ and default rate $\gamma_2=0$ such that
-
-\begin{equation}
-\label{s2}
-\sigma^2 \sim IG~(\gamma_1,~\gamma_2)
-\end{equation}
-
-We also assume a Gamma prior with shape and rate $\frac{\nu}{2}$ for $V_i$, such that
-
-\begin{equation}
-\label{vi}
-V_i \sim \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg)
-\end{equation}
-
-For $\lambda$, we assume a gamma prior such that $h_1 = h_2= 10$ by default.
-
-\begin{equation}
-\label{lamprior}
-\lambda \sim \Gamma \bigg(h_1, ~h_2\bigg)
-\end{equation}
+The function used to fit the Robust BMARS model in the `TBASS` package is the `tbass()` command (see section [3](#tbass)).
 
 ## Likelihood
 
@@ -158,7 +135,7 @@ Our regression coefficients $\boldsymbol\beta$ follow a Gaussian prior such that
 
 \begin{equation}
 \label{8}
-\boldsymbol\beta | \cdot \sim \mathcal{N} \left( 0,~\tau^2 {\bf I} \right)
+\boldsymbol\beta \sim \mathcal{N} \left( 0,~\tau^2 {\bf I} \right)
 \end{equation}
 
 
@@ -208,6 +185,28 @@ $$
 
 Equation (\ref{like}) is the likelihood for the current state model with $M$ basis functions.\newline
 
+## Priors
+
+We assume an Inverse-Gamma prior for $\sigma^2$ with default shape $\gamma_1 = 0$ and default rate $\gamma_2=0$ such that
+
+\begin{equation}
+\label{s2}
+\sigma^2 \sim IG~(\gamma_1,~\gamma_2)
+\end{equation}
+
+We also assume a Gamma prior with shape and rate $\frac{\nu}{2}$ for $V_i$, such that
+
+\begin{equation}
+\label{vi}
+V_i \sim \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg)
+\end{equation}
+
+For $\lambda$, we assume a gamma prior such that $h_1 = h_2= 10$ by default.
+
+\begin{equation}
+\label{lamprior}
+\lambda \sim \Gamma \bigg(h_1, ~h_2\bigg)
+\end{equation}
 
 
 ## Full Conditionals
@@ -260,7 +259,7 @@ Our acceptance ratio $\alpha$ is denoted by
 \right\rbrace
 \end{equation}
 
-where $D$ represents the data, $\theta'$ represents the candidate model parameters and $\theta$ represent the current state model parameters, $L$ is the likelihood, $p$ is the prior, and $S$ is the proposal to jump from one model to another. 
+where $D$ represents the data, $\theta'$ represents the candidate model parameters and $\theta$ represent the current model parameters, $L$ is the likelihood, $p$ is the prior, and $S$ is the proposal to jump from one model to another. 
 
 Section [2.6](#birth) details the RJ-MCMC algorithm for the birth step in detail. The death and change steps are very similar in nature.
 
@@ -273,7 +272,7 @@ Since a basis function is added for the birth step, we have that
 
 
 \begin{equation}
-L(y \mid {\theta' = M'}) \propto 
+L({\bf y} \mid {\theta' = M'}) \propto 
 \left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left(\bf{y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left(\bf{X'V^{-1}X} + \tau^{-2} {\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
 \end{equation} 
 
@@ -283,7 +282,7 @@ Using (\ref{like}), The likelihood ratio $\frac{L(\theta')}{L(\theta)}$ is then 
 
 \begin{equation}
 \label{12}
-\frac{L(y \mid {\theta' = M'})}{L(y \mid {\theta = M})} = \frac{\left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}_c\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}'_{c} \left({\bf X'_{c}V^{-1}X_{c}} + \tau^{-2}{\bf I_{c}}\right) \boldsymbol{\hat\beta}_{c}\right)\right\rbrace}
+\frac{L({\bf y} \mid {\theta' = M'=M+1})}{L({\bf y} \mid {\theta = M})} = \frac{\left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}_c\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}'_{c} \left({\bf X'_{c}V^{-1}X_{c}} + \tau^{-2}{\bf I_{c}}\right) \boldsymbol{\hat\beta}_{c}\right)\right\rbrace}
 {\left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace}\\\\
 \end{equation}
 
@@ -393,10 +392,10 @@ col <- rep(1,n) # for coloring the outlier points in a later plot
 col[ind] <- 2
 ```
 
-From there, we can run the `tbass()` command with 20000 MCMC iterations (default 10000). Our first simulation is with $\nu = 10$ degrees of freedom to simulate a t-distribution with thicker tails.
+From there, we can run the `tbass()` command with 30000 MCMC iterations (default 10000). Our first simulation is with $\nu = 10$ degrees of freedom to simulate a t-distribution with thicker tails.
 
 ```{r,cache=TRUE}
-nmcmc <- 20000 #number of iterations
+nmcmc <- 30000 #number of iterations
 tb <- tbass(x, y, nu = 10, nmcmc = nmcmc, verbose = TRUE)
 ```
 
@@ -434,7 +433,7 @@ We see that the prediction is quite accurate despite the presence of outliers.
 We set a burn-in value to the first 10% of samples.
 
 ```{r}
-burn_final <- nmcmc/10
+burn_final <- nmcmc/50
 burn <- 1:burn_final
 ```
 
