@@ -5,10 +5,10 @@
 \alias{pos}
 \title{t-Distributed Bayesian Adaptive Spline Surfaces (TBASS)}
 \usage{
-tbass(X,y)
+tbass(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE)
 }
 \arguments{
-\item{X}{a dataframe matrix of predictor values}
+\item{X}{a matrix of predictor values}
 
 \item{y}{vector of response data, ideally with noise}
 

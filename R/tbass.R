@@ -14,8 +14,8 @@
 #' @title t-Distributed Bayesian Adaptive Spline Surfaces (TBASS)
 #' @name tbass
 #' @description Robust BMARS function for Student's t-distributed likelihoods. See bass function in package BASS. Returns the estimated model parameters.
-#' @usage tbass(X,y)
-#' @param X a dataframe matrix of predictor values
+#' @usage tbass(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE)
+#' @param X a matrix of predictor values
 #' @param y vector of response data, ideally with noise
 #' @param max.int maximum degree of interaction, default is 3
 #' @param max.basis maximum number of basis functions permitted by function, default is 50
