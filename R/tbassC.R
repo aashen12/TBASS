@@ -1,66 +1,4 @@
-#######################################################
-# Authors: Andy Shen, Devin Francom, Los Alamos National Laboratory
-# github.com/aashen12/TBASS
-#######################################################
-
-########################################################################
-## main TBASS function
-########################################################################
-
-#' Includes auxiliary functions used in tbass() function.
-#' pos() takes a vector x and returns max(0, x);
-#' getd() uses Cholesky decomposition for TBASS likelihood to return V matrix and beta_hat;
-#' makeBasis() creates a basis function given signs, variables, knot locations and data or X matrix.
-#' @title t-Distributed Bayesian Adaptive Spline Surfaces (TBASS)
-#' @name tbass
-#' @description Robust BMARS function for Student's t-distributed likelihoods. See bass function in package BASS. Returns the estimated model parameters.
-#' @usage tbass(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE)
-#' @param X a matrix of predictor values
-#' @param y vector of response data, ideally with noise
-#' @param max.int maximum degree of interaction, default is 3
-#' @param max.basis maximum number of basis functions permitted by function, default is 50
-#' @param tau2 prior for regression coefficients
-#' @param nu degrees of freedom for Student's t distribution, default 10
-#' @param nmcmc number of MCMC iterations, default 10000
-#' @param g1 shape for IG prior on sigma^2, default 0
-#' @param g2 scale for IG prior on sigma^2, default 0
-#' @param h1 shape for gamma prior on lambda, default 10
-#' @param h2 scale for gamma prior on lambda, default 10
-#' @param verbose prints running output every ticker iterations if TRUE, can be changed
-#' @return a list object with estimated model parameters
-#' @export
-#' @import mnormt
-
-#Rcpp::sourceCpp("/Users/andyshen/Desktop/Git/TBASS/TBASS/getdC.cpp")
-
-pos<-function(vec){
-  (abs(vec)+vec)/2
-}
-
-makeBasis<-function(signs,vars,knots,datat,degree=1){
-  temp1<-pos(signs*(datat[vars,,drop=F]-knots))^degree # this only works for t(data)...
-  if(length(vars)==1){
-    return(c(temp1))
-  } else{
-    temp2<-1
-    for(pp in 1:length(vars)){ # faster than apply
-      temp2<-temp2*temp1[pp,]
-    }
-    return(temp2)
-  }
-}
-
-getd<-function(X,v,s2,tau2,y){
-  Vinv<-t(X)%*%diag(v)%*%X/s2+diag(ncol(X))/tau2
-  Vinv.chol<-chol(Vinv)
-  V<-chol2inv(Vinv.chol)#solve(Vinv)
-  Vinv.ldet<-sum(log(diag(Vinv.chol)))#determinant(Vinv)$mod
-  bhat<-V%*%t(X)%*%diag(v)%*%y/s2 #regression eqn
-  d <- -.5*Vinv.ldet + .5*t(bhat)%*%Vinv%*%bhat
-  return(list(d=d,bhat=bhat,Vinv.ldet=Vinv.ldet,V=V,Vinv.chol=Vinv.chol,Vinv=Vinv))
-}
-
-tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE){
+tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE){
   ticker = nmcmc/10
   # see parameter verbose, should be a multiple of 100, 500, or 1000, default is 1000 for 10000 nmcmc iterations
   Xt<-t(X)
@@ -77,29 +15,29 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
   s2[1]<-1
   lam[1]<-1
   X.curr<-matrix(rep(1,n))
-
+  
   d.curr<-getd(X.curr,v[1,],s2[1],tau2,y)
-
+  
   count<-c(0,0,0) # count how many times we accept birth, death, change
   beta[1,1]<-d.curr$bhat
-
+  
   for(i in 2:nmcmc){
-
+    
     ## Reversible jump step
-
+    
     move.type<-sample(c('birth','death','change'),1)
     if(nbasis[i-1]==0)
       move.type<-'birth'
     if(nbasis[i-1]==max.basis)
       move.type<-sample(c('death','change'),1)
-
+    
     # set all of this iterations values to last iteration values...we'll change them if we accept a move below
     nbasis[i]<-nbasis[i-1]
     nint[i,]<-nint[i-1,]
     knots[i,,]<-knots[i-1,,]
     signs[i,,]<-signs[i-1,,]
     vars[i,,]<-vars[i-1,,]
-
+    
     if(move.type=='birth'){
       nint.cand<-sample(max.int,1) # sample degree of interaction for new basis function
       knots.cand<-runif(nint.cand) # sample knots for new basis function
@@ -108,7 +46,7 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
       basis.cand<-makeBasis(signs.cand,vars.cand,knots.cand,Xt) # make the new basis function
       X.cand<-cbind(X.curr,basis.cand) # add the new basis function to the basis functions we already have
       d.cand<-getd(X.cand,v[i-1,],s2[i-1],tau2,y)
-
+      
       llik.alpha <- .5*log(1/tau2) + d.cand$d - d.curr$d # calculate the log likelihood ratio
       lprior.alpha <- ( # log prior ratio
         log(lam[i-1])-log(nbasis[i-1]+1) # nbasis
@@ -129,9 +67,9 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
           + log(1/choose(p,nint.cand)) # probability of vars.cand
         )
       )
-
+      
       alpha <- llik.alpha + lprior.alpha + lprop.alpha
-
+      
       if(log(runif(1))<alpha){
         X.curr<-X.cand
         d.curr<-d.cand
@@ -142,12 +80,12 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
         vars[i,nbasis[i],1:nint.cand]<-vars.cand
         count[1]<-count[1]+1
       }
-
+      
     } else if(move.type=='death'){
       tokill<-sample(nbasis[i-1],1) # which basis function we will delete
       X.cand<-X.curr[,-(tokill+1),drop=F] # +1 to skip the intercept
       d.cand <- getd(X.cand,v[i-1,],s2[i-1],tau2,y)
-
+      
       llik.alpha <- -.5*log(1/tau2) + d.cand$d - d.curr$d
       lprior.alpha <- (
         -log(lam[i-1])+log(nbasis[i-1]) # nbasis
@@ -168,9 +106,9 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
           + log(1/nbasis[i-1]) # probability that this basis function is selected to kill
         )
       )
-
+      
       alpha <- llik.alpha + lprior.alpha + lprop.alpha
-
+      
       if(log(runif(1))<alpha){
         X.curr<-X.cand
         d.curr<-d.cand
@@ -187,9 +125,9 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
         }
         count[2]<-count[2]+1
       }
-
+      
     } else{
-
+      
       tochange<-sample(nbasis[i-1],1) # which basis function we will change
       tochange2<-sample(nint[i-1,tochange],1) # which element in the basis function tensor product we will change
       knots.cand<-knots[i-1,tochange,1:nint[i-1,tochange]] # copy previous
@@ -199,13 +137,13 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
       basis<-makeBasis(signs.cand,vars[i-1,tochange,1:nint[i-1,tochange]],knots.cand,Xt)
       X.cand<-X.curr
       X.cand[,tochange+1]<-basis # +1 for intercept
-
+      
       d.cand <- getd(X.cand,v[i-1,],s2[i-1],tau2,y)
-
+      
       llik.alpha <- d.cand$d - d.curr$d
-
+      
       alpha <- llik.alpha
-
+      
       if(log(runif(1))<alpha){
         X.curr<-X.cand
         d.curr<-d.cand
@@ -213,20 +151,20 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
         signs[i,tochange,1:nint[i,tochange]]<-signs.cand
         count[3]<-count[3]+1
       }
-
+      
     }
-
+    
     ## Gibbs steps
-
+    
     lam[i]<-rgamma(1,h1+nbasis[i],h2+1)
     #curr$beta<-curr$bhat/(1+curr$beta.prec)+curr$R.inv.t%*%rnorm(curr$nc)*sqrt(curr$s2/(1+curr$beta.prec)/data$itemp.ladder[curr$temp.ind])
     beta[i,1:(nbasis[i]+1)]<-mnormt::rmnorm(1,d.curr$bhat,d.curr$V)
     res<-y-X.curr%*%t(beta[i,1:(nbasis[i]+1),drop=F])
     v[i,]<-rgamma(n,(nu+1)/2,nu/2 + .5/s2[i-1]*res^2)
     s2[i]<-1/rgamma(1,n/2+g1,rate=g2+.5*sum(v[i,]*res^2))
-
+    
     d.curr<-getd(X.curr,v[i,],s2[i],tau2,y)
-
+    
     if(verbose == TRUE) {
       if(i%%ticker==0) {
         cat(timestamp(quiet = T),' nmcmc: ',i,' nbasis: ',nbasis[i],'\n')
@@ -235,6 +173,4 @@ tbass <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2
   }
   return(list(X=X.curr,b=d.curr$bhat,count=count,knots=knots,signs=signs,vars=vars,nint=nint,nbasis=nbasis,beta=beta,s2=s2,lam=lam,v=v))
 }
-
-##############################################################################################################################################
 
