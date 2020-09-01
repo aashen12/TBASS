@@ -31,7 +31,7 @@
 #' @export
 #' @import mnormt
 
-Rcpp::sourceCpp("/Users/andyshen/Desktop/Git/TBASS/TBASS/getdC.cpp")
+#Rcpp::sourceCpp("/Users/andyshen/Desktop/Git/TBASS/TBASS/getdC.cpp")
 
 pos<-function(vec){
   (abs(vec)+vec)/2
