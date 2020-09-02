@@ -14,5 +14,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-LinkingTo: 
-    RcppArmadillo
+
