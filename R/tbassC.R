@@ -1,15 +1,33 @@
+Rcpp::sourceCpp("/Users/andyshen/Desktop/LANL/getdC.cpp") 
+pos<-function(vec){
+  (abs(vec)+vec)/2
+}
 
-Rcpp::cppFunction('List getdC(NumericMatrix X,NumericMatrix v,double s2,double tau2,NumericVector y,Function  t,Function chol,Function chol2inv,Function diag) {
-  int ncX = X.ncol();
-  NumericMatrix Vinv = t(X) * diag(v) %*% X/s2 + diag(ncX)/tau2;
-  NumericMatrix Vinvchol = chol(Vinv);
-  NumericMatrix V = chol2inv(Vinvchol);
-  NumericMatrix Vinvldet = sum(log(diag(Vinvchol)));
-  NumericMatrix bhat = V * t(X) * diag(v) * y/s2;
-  double d = -.5*Vinvldet + .5 * t(bhat) * Vinv * bhat;
-  List L = List::create(d,bhat,Vinvldet,V,Vinvchol,Vinv);
-  return L;
-}')
+makeBasis<-function(signs,vars,knots,datat,degree=1){
+  temp1<-pos(signs*(datat[vars,,drop=F]-knots))^degree # this only works for t(data)...
+  if(length(vars)==1){
+    return(c(temp1))
+  } else{
+    temp2<-1
+    for(pp in 1:length(vars)){ # faster than apply
+      temp2<-temp2*temp1[pp,]
+    }
+    return(temp2)
+  }
+}
+
+# Rcpp::cppFunction('List getdC(NumericMatrix X,NumericMatrix v,double s2,double tau2,NumericVector y,
+# Function  t,Function chol,Function chol2inv,Function diag, Function mm) {
+#   int ncX = X.ncol();
+#   NumericMatrix Vinv = mm(mm(t(X), diag(v)), X/s2) + diag(ncX)/tau2;
+#   NumericMatrix Vinvchol = chol(Vinv);
+#   NumericMatrix V = chol2inv(Vinvchol);
+#   NumericMatrix Vinvldet = sum(log(diag(Vinvchol)));
+#   NumericMatrix bhat = mm(mm(V, t(X)), mm(diag(v), y/s2));
+#   double d = -.5*Vinvldet + .5 * mm(mm(t(bhat), Vinv), bhat);
+#   List L = List::create(d,bhat,Vinvldet,V,Vinvchol,Vinv);
+#   return L;
+# }')
 
 tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE){
   ticker = nmcmc/10
@@ -29,10 +47,10 @@ tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g
   lam[1]<-1
   X.curr<-matrix(rep(1,n))
   
-  d.curr<-getdC(X.curr,v[1,],s2[1],tau2,y,t,chol,chol2inv,diag)
+  d.curr<-getdC(X.curr,v[1,],s2[1],tau2,y)
   
   count<-c(0,0,0) # count how many times we accept birth, death, change
-  beta[1,1]<-d.curr$bhat
+  beta[1,1]<-d.curr[[2]]
   
   for(i in 2:nmcmc){
     
@@ -58,9 +76,9 @@ tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g
       vars.cand<-sample(p,nint.cand,replace = F) # variables to use in new basis function
       basis.cand<-makeBasis(signs.cand,vars.cand,knots.cand,Xt) # make the new basis function
       X.cand<-cbind(X.curr,basis.cand) # add the new basis function to the basis functions we already have
-      d.cand<-getdC(X.cand,v[i-1,],s2[i-1],tau2,y,t,chol,chol2inv,diag)
+      d.cand<-getdC(X.cand,v[i-1,],s2[i-1],tau2,y)
       
-      llik.alpha <- .5*log(1/tau2) + d.cand$d - d.curr$d # calculate the log likelihood ratio
+      llik.alpha <- .5*log(1/tau2) + d.cand[[1]] - d.curr[[1]] # calculate the log likelihood ratio
       lprior.alpha <- ( # log prior ratio
         log(lam[i-1])-log(nbasis[i-1]+1) # nbasis
         + log(1/max.int)  # nint
@@ -97,9 +115,9 @@ tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g
     } else if(move.type=='death'){
       tokill<-sample(nbasis[i-1],1) # which basis function we will delete
       X.cand<-X.curr[,-(tokill+1),drop=F] # +1 to skip the intercept
-      d.cand <- getdC(X.cand,v[i-1,],s2[i-1],tau2,y,t,chol,chol2inv,diag)
+      d.cand <- getdC(X.cand,v[i-1,],s2[i-1],tau2,y)
       
-      llik.alpha <- -.5*log(1/tau2) + d.cand$d - d.curr$d
+      llik.alpha <- -.5*log(1/tau2) + d.cand[[1]] - d.curr[[1]]
       lprior.alpha <- (
         -log(lam[i-1])+log(nbasis[i-1]) # nbasis
         - log(1/max.int)  # nint
@@ -151,9 +169,9 @@ tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g
       X.cand<-X.curr
       X.cand[,tochange+1]<-basis # +1 for intercept
       
-      d.cand <- getdC(X.cand,v[i-1,],s2[i-1],tau2,y,t,chol,chol2inv,diag)
+      d.cand <- getdC(X.cand,v[i-1,],s2[i-1],tau2,y)
       
-      llik.alpha <- d.cand$d - d.curr$d
+      llik.alpha <- d.cand[[1]] - d.curr[[1]]
       
       alpha <- llik.alpha
       
@@ -171,12 +189,12 @@ tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g
     
     lam[i]<-rgamma(1,h1+nbasis[i],h2+1)
     #curr$beta<-curr$bhat/(1+curr$beta.prec)+curr$R.inv.t%*%rnorm(curr$nc)*sqrt(curr$s2/(1+curr$beta.prec)/data$itemp.ladder[curr$temp.ind])
-    beta[i,1:(nbasis[i]+1)]<-mnormt::rmnorm(1,d.curr$bhat,d.curr$V)
+    beta[i,1:(nbasis[i]+1)]<-mnormt::rmnorm(1,d.curr[[2]],d.curr[[4]])
     res<-y-X.curr%*%t(beta[i,1:(nbasis[i]+1),drop=F])
     v[i,]<-rgamma(n,(nu+1)/2,nu/2 + .5/s2[i-1]*res^2)
     s2[i]<-1/rgamma(1,n/2+g1,rate=g2+.5*sum(v[i,]*res^2))
     
-    d.curr<-getdC(X.curr,v[i,],s2[i],tau2,y,t,chol,chol2inv,diag)
+    d.curr<-getdC(X.curr,v[i,],s2[i],tau2,y)
     
     if(verbose == TRUE) {
       if(i%%ticker==0) {
@@ -184,6 +202,6 @@ tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g
       }
     }
   }
-  return(list(X=X.curr,b=d.curr$bhat,count=count,knots=knots,signs=signs,vars=vars,nint=nint,nbasis=nbasis,beta=beta,s2=s2,lam=lam,v=v))
+  return(list(X=X.curr,b=d.curr[[2]],count=count,knots=knots,signs=signs,vars=vars,nint=nint,nbasis=nbasis,beta=beta,s2=s2,lam=lam,v=v))
 }
 
