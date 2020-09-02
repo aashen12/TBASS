@@ -1,4 +1,4 @@
-#Rcpp::sourceCpp("/Users/andyshen/Desktop/LANL/getdC.cpp") 
+Rcpp::sourceCpp("/Users/andyshen/Desktop/LANL/getdC.cpp") 
 
 
 pos<-function(vec){
