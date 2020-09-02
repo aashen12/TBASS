@@ -1,4 +1,5 @@
 ###Rcpp::sourceCpp("getdC.cpp")
+
 getdC <- function(){
   .Call( "getdC", PACKAGE = "tbassrcpp" )
 }
