@@ -1,4 +1,4 @@
-Rcpp::sourceCpp("getdC.cpp") 
+#Rcpp::sourceCpp("getdC.cpp") 
 
 
 pos<-function(vec){
