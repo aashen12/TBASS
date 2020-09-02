@@ -1,7 +1,7 @@
 ###Rcpp::sourceCpp("getdC.cpp")
 
 getdC <- function(){
-  .Call( "getdC", PACKAGE = "tbassrcpp" )
+  .Call( "getdC", PACKAGE = "tbasscpp" )
 }
 
 pos<-function(vec){
