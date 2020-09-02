@@ -1,5 +1,3 @@
-
-#Rcpp::sourceCpp("/Users/andyshen/Desktop/LANL/getdC.cpp")
 pos<-function(vec){
   (abs(vec)+vec)/2
 }
