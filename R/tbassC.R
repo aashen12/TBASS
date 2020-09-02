@@ -1,9 +1,3 @@
-###Rcpp::sourceCpp("getdC.cpp")
-
-getdC <- function(){
-  .Call( "getdC.cpp", PACKAGE = "tbasscpp" )
-}
-
 pos<-function(vec){
   (abs(vec)+vec)/2
 }
