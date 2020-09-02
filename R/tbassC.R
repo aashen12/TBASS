@@ -1,4 +1,6 @@
-Rcpp::sourceCpp("/Users/andyshen/Desktop/LANL/getdC.cpp") 
+#Rcpp::sourceCpp("/Users/andyshen/Desktop/LANL/getdC.cpp") 
+
+
 pos<-function(vec){
   (abs(vec)+vec)/2
 }
@@ -16,18 +18,21 @@ makeBasis<-function(signs,vars,knots,datat,degree=1){
   }
 }
 
-# Rcpp::cppFunction('List getdC(NumericMatrix X,NumericMatrix v,double s2,double tau2,NumericVector y,
-# Function  t,Function chol,Function chol2inv,Function diag, Function mm) {
-#   int ncX = X.ncol();
-#   NumericMatrix Vinv = mm(mm(t(X), diag(v)), X/s2) + diag(ncX)/tau2;
-#   NumericMatrix Vinvchol = chol(Vinv);
-#   NumericMatrix V = chol2inv(Vinvchol);
-#   NumericMatrix Vinvldet = sum(log(diag(Vinvchol)));
-#   NumericMatrix bhat = mm(mm(V, t(X)), mm(diag(v), y/s2));
-#   double d = -.5*Vinvldet + .5 * mm(mm(t(bhat), Vinv), bhat);
-#   List L = List::create(d,bhat,Vinvldet,V,Vinvchol,Vinv);
-#   return L;
-# }')
+Rcpp::cppFunction('Rcpp::List getdC(const arma::mat& X, const arma::colvec& v,
+const arma::double& s2, const arma::double& tau2, const arma::colvec& y) {
+  int ncX = X.n_cols;
+  arma::mat I_ncx = eye(ncX,ncX);
+  arma::mat diagv = diagmat(v);
+  arma::mat Vinv = trans(X) * diagv * X/s2 + I_ncx/tau2;
+  arma::mat Vinvchol = chol(Vinv);
+  arma::vec dgVinvchol = diagvec(Vinvchol);
+  arma::mat V = Vinv.i();
+  double Vinvldet = sum(log(dgVinvchol));
+  arma::vec bhat = V * trans(X) * diagv * y/s2;
+  arma::vec d = (-0.5 * Vinvldet) + (0.5 * trans(bhat) * Vinv * bhat);
+  Rcpp::List L = Rcpp::List::create(d,bhat,Vinvldet,V,Vinvchol,Vinv);
+  return L;
+}')
 
 tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE){
   ticker = nmcmc/10
