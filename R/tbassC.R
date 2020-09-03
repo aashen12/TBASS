@@ -5,6 +5,7 @@
 
 ########################################################################
 ## FAST TBASS function using Rcpp and Rcpp Armadillo
+## Has the same functionality as original tbass() function, except much faster
 ########################################################################
 
 #' @export
