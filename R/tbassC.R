@@ -8,7 +8,7 @@
 ## Has the same functionality as original tbass() function, except much faster
 ########################################################################
 
-#Rcpp::sourceCpp("/Users/andyshen/Desktop/Git/TBASS/TBASS/getdC.cpp")
+Rcpp::sourceCpp("/src/getdC.cpp")
 
 pos<-function(vec){
   (abs(vec)+vec)/2
