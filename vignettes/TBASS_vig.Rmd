@@ -1,0 +1,481 @@
+---
+title: "TBASS: A Robust Adaptation of Bayesian Adaptive Spline Surfaces"
+author: "Andy A. Shen, Kellin N. Rumsey, Devin C. Francom"
+date: "Statistical Sciences Group (CCS-6): Los Alamos National Laboratory"
+bibliography: tbass_references.bib
+header-includes:
+- \usepackage{amsmath}
+- \usepackage{amssymb}
+- \usepackage{amsthm}
+- \usepackage{bm}
+output: 
+  pdf_document:
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{TBASS: A Robust Adaptation of Bayesian Multivariate Adaptive Regression Splines}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  echo = TRUE,
+  comment = "# >"
+)
+```
+
+```{r setup, include=FALSE}
+library(TBASS)
+# rmarkdown::html_vignette
+```
+
+------------------------
+
+\begin{abstract}
+
+The R package TBASS is an extension of the BASS package created by Francom and Sansó (2019). The package is used to fit a Bayesian multivariate adaptive spline to a dataset that either follows a Student's t-distribution or has outliers. Much of the framework for TBASS is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done by Denison, Mallick, and Smith (1998). The spline function is fit using a Reversible-Jump Markov Chain Monte Carlo algorithm, followed by Gibbs Sampling. By including this more robust generalization, a dataset with outliers can accurately fit using the BMARS model, without the possibility of overfitting or variance inflation.\newline
+
+\end{abstract}
+
+***Keywords***: splines, robust regression, Bayesian inference, nonparametric regression, sensitivity analysis
+
+
+------------------------
+
+# Introduction
+
+Splines are a commonly used regression tool for fitting nonlinear data, both univariate and multivariate. Splines can act as basis functions, where each basis function combines to form the ${\bf X}$ matrix. The simplest way to create the ith basis functions can be represented as
+
+\begin{equation}
+\label{1}
+{\bf X}_{ij} = [s_i(x_{j} - t_{i})]_{+}
+\end{equation}
+
+Equation (\ref{1}) is used to calculate the ith column of the ${\bf X}$ matrix of basis functions, where $s_i \in \lbrace-1,1\rbrace$, $t_i$ is called a **knot** and $[a]_{+} = \max(0, a)$.
+
+For example, given the nonlinear data shown in Figure 1 below, we can use (\ref{1}) to fit a spline model shown in Figure 2.
+
+```{r,echo=FALSE}
+set.seed(12)
+n <- 300
+x <- seq(0,1,length.out=n)
+y <- sin(2 * pi * x^2) * 10 + rnorm(n)
+```
+
+```{r,echo=FALSE}
+generate_spline <- function(tvec, nknot = length(tvec)) {
+  s <- sample(c(1), nknot, replace = TRUE)
+  Bmat <- matrix(NA, nknot, length(x))
+  hs <- Bmat
+  
+  for(i in 1:nknot) {
+    for(j in 1:length(x)) {
+      Bmat[i,j] <- max(s[i] * (x[j] - tvec[i]), 0)
+    } #creating basis functions
+  }
+  
+  mBmat <- t(Bmat)
+  mod <- lm(y ~ mBmat) #use gibbs to sample coefs in bayes
+  pred <- predict(mod)
+
+  
+  plot(x,y,main=paste0("Figure ",2," : Univariate Spline Function"))
+  lines(x, pred, type = "l", lwd = 5, col="blue1")
+  #list(basis=mBmat)
+}
+t <- c(0, 0.525, 0.875)
+```
+
+```{r,echo=FALSE}
+plot(x,y,main=paste0("Figure ",1," : Univariate Nonlinear Data"))
+generate_spline(t)
+```
+
+
+\pagebreak
+
+# Robust BMARS 
+
+## Overview
+
+We want to extend the theory behind frequentist univariate spline regression to a multivariate Bayesian framework. Moreover, we want to accurately fit nonlinear data that has outliers. We adopt the Robust BMARS model based on the standard Gaussian framework used by @denison1998bayesian and @francom2019inferring when deriving our likelihood and full conditional distributions for the parameters. 
+
+In the presence of outliers, Gaussian BMARS will attempt to capture the excess noise by either adding basis functions (overfitting) or inflating the variance term ($\sigma^2$). The Robust BMARS model accounts for this sensitivity to outliers by avoiding overfitting or variance inflation when the degrees of freedom ($\nu$) are low. When $\nu$ is high, the t-distribution closely mimics a normal distribution, so the Robust BMARS model behaves in a similar way.
+
+The function used to fit the Robust BMARS model in the `TBASS` package is the `tbass()` command (see section [3](#tbass)).
+
+## Likelihood
+
+In creating the Robust BMARS model, we introduce new auxiliary parameters not used in the Gaussian model (@gelman2013bayesian).  
+
+Similar to Gaussian BMARS, we let $y_i$ be our dependent variable and $\mathbf{x}_i$ be our independent variable representing a single basis function with $i = 1,...,n$. Without loss of generality, all independent variables $\mathbf{x}_i$ are scaled from zero to one (@francom2019bass).
+
+In the robust case, $y_i$ is modeled as
+
+\begin{equation}
+\label{2}
+{\bf y} = {\bf X}\boldsymbol{\beta} + {\boldsymbol\epsilon}, \quad {\boldsymbol\epsilon} \sim t_{\nu}\left({\bf 0}, ~ \sigma^2 {\bf V}^{-1}\right)
+\end{equation}
+
+and
+
+\begin{equation}
+\label{3}
+y_i | V_i \sim \mathcal{N}\left({\bf X}\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right)
+\end{equation}
+
+where ${\bf X}$ represents the matrix of basis functions by column, $\boldsymbol \beta$ is the vector of regression coefficients, $\boldsymbol\epsilon$ is the error term,  $\nu$ represents the degrees of freedom in a Student's t-distribubtion, $\sigma^2$ is the variance term for $y_i$, and ${\bf V}^{-1} = diag(1/V_1...1/V_n)$ where $V_i$ is the variance estimate of $y_i$.
+
+The basis functions themselves are produced the same way as in the `BASS` package by @francom2019bass.
+
+### Regression Coefficients
+
+Our regression coefficients $\boldsymbol\beta$ follow a Gaussian prior such that
+
+\begin{equation}
+\label{8}
+\boldsymbol\beta \sim \mathcal{N} \left( 0,~\tau^2 {\bf I} \right)
+\end{equation}
+
+
+In the Student's t-distribution, we can marginalize the posterior for $\boldsymbol\beta$ and $\sigma^2$ to obtain the regression estimate $\boldsymbol{\hat{\beta}}$:
+
+\begin{equation}
+\label{9}
+\boldsymbol{\hat{\beta}} = 
+\frac{1}{\sigma^2}
+\left( \frac{1}{\sigma^2} {\bf X'VX} + {\tau^{-2}}{{I}} \right)^{-1} {\bf X'} {\bf V}~{{{\bf y}}}
+\end{equation}
+
+
+where $\tau^2$ is the prior variance for $\beta_{i}$.
+
+### Marginal Likelihood Function 
+
+Estimate (\ref{9}) allows us to achieve our t-distributed likelihood function for the birth step. After marginalizing out $\boldsymbol\beta$ and $\sigma^2$, we can simplify our Likelihood $L$ to
+
+$$
+L({\bf y}\mid\cdot) \propto \left(\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2}\exp\left(-\frac{1}{2}{\bf y'V^{-1}y} \right) \exp\left(-\frac{1}{2}\boldsymbol{{\beta}}'{\bf H^{-1}}\boldsymbol{{\beta}} - 2\boldsymbol{{\beta}}'{\bf X'V^{-1}y}\right)
+$$
+
+where ${\bf H} = ({\bf X'V^{-1}X} + \tau^{-2}{\bf I})$.\newline
+
+We then complete the square on the first exponential term using ${\bf y'~V^{-1}X~ H^{-1}~X'V^{-1}y}$ which simplifies to $\boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}$ since ${\bf X'V^{-1}y} = {\bf H}{\boldsymbol{\hat{\beta}}}$ from (\ref{9}).\newline
+
+From there, we have that
+
+$$
+\begin{aligned}
+L({\bf y}\mid\cdot) &\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~\exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)
+\exp\left\lbrace-\frac{1}{2}\left(\boldsymbol\beta'{\bf H}\boldsymbol\beta - \boldsymbol\beta'{\bf H}\boldsymbol{\hat{\beta}} - \boldsymbol{\hat{\beta}}'{\bf H}\boldsymbol\beta + \boldsymbol{\hat{\beta}}'{\bf H}\boldsymbol{\hat{\beta}} \right)\right\rbrace\\
+&\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~\exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)
+\exp\left\lbrace-\frac{1}{2}\left[\left(\boldsymbol\beta -\boldsymbol{\hat{\beta}} \right)'{\bf H}\left(\boldsymbol\beta -\boldsymbol{\hat{\beta}}\right)\right]\right\rbrace\\
+&\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~ \exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)~
+\mathcal N\left(\boldsymbol\beta \mid \boldsymbol{\hat\beta}, ~{\bf H}^{-1}\right) \left|{\bf H}^{-1}\right|^{-1/2}\left(2\pi\right)^{\frac{M+1}{2}}\\
+&\propto \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right\rbrace\\
+&\propto \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
+\end{aligned} 
+$$
+
+\begin{equation}
+\label{like}
+\Rightarrow L({\bf y}\mid\cdot) = (\tau^2)^{\frac{M+1}{2}} |{\bf V}|^{-1/2} ~\left|({\bf X^tV^{-1}X} +{\tau^{-2}} {\bf I})^{-1}\right|^{-1/2} \exp\bigg\lbrace -\frac{1}{2}\big({\bf y'V^{-1}y} - \boldsymbol{\hat\beta}^t ({\bf X^tV^{-1}X} +{\tau^{-2}} {\bf I})^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
+\end{equation}
+
+Equation (\ref{like}) is the likelihood for the current state model with $M$ basis functions.\newline
+
+## Priors {#priors}
+
+We assume an Inverse-Gamma prior for $\sigma^2$ with default shape $\gamma_1 = 0$ and default rate $\gamma_2=0$ such that
+
+\begin{equation}
+\label{s2}
+\sigma^2 \sim IG~(\gamma_1,~\gamma_2)
+\end{equation}
+
+We also assume a Gamma prior with shape and rate $\frac{\nu}{2}$ for $V_i$, such that
+
+\begin{equation}
+\label{vi}
+V_i \sim \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg)
+\end{equation}
+
+For $\lambda$, we assume a gamma prior such that $h_1 = h_2= 10$ by default.
+
+\begin{equation}
+\label{lamprior}
+\lambda \sim \Gamma \bigg(h_1, ~h_2\bigg)
+\end{equation}
+
+
+## Reversible-Jump Markov Chain Monte Carlo (RJ-MCMC)
+
+Like Gaussian BMARS, the robust algorithm adaptively builds, deletes, and modifies basis functions, sampling from candidate knot locations, signs, interaction degrees, and accepting or rejecting the candidate values using a RJ-MCMC algorithm to sample from the full posterior.
+
+RJ-MCMC is a generalization of the traditional Metropolis-Hastings algorithm in the sense that RJ-MCMC allows for parameter dimension change, allowing for simulation when the number of parameters is unknown. This is important for BMARS because we want to learn where knots should be placed and how many basis functions to have in our model, along with the degree of interaction for our basis functions. We also want to know if certain basis functions should be added, deleted, or changed.
+
+Our Robust generalization for the RJ-MCMC algorithm is largely based off the work by @denison1998bayesian.
+
+The BMARS model has three possible move types, which is sampled using a discrete uniform:
+
+  - **Birth**: adding a basis function 
+
+  - **Death**: deleting a basis function
+
+  - **Change**: changing a knot, sign, and values of a basis function 
+  
+
+Once the move type is sampled, the RJ-MCMC algorithm is used to determine acceptance of that move type.
+
+Our acceptance ratio $\alpha$ is denoted by
+
+\begin{equation}
+\label{TBD}
+\alpha = min\left\lbrace 
+1,\
+\frac{L(D|\theta') \ p(\theta')\ S(\theta'\rightarrow\theta)}{L(D|\theta)\ p(\theta) \ S(\theta\rightarrow\theta')} 
+\right\rbrace
+\end{equation}
+
+where $D$ represents the data, $\theta'$ represents the candidate model parameters and $\theta$ represent the current model parameters, $L$ is the likelihood, $p$ is the prior, and $S$ is the proposal to jump from one model to another. 
+
+Section [2.6](#birth) details the RJ-MCMC algorithm for the birth step in detail. The death and change steps are very similar in nature.
+
+
+## Birth Step {#birth}
+
+### Likelihood Ratio
+
+Since a basis function is added for the birth step, we have that
+
+
+\begin{equation}
+L({\bf y} \mid {\theta' = M'}) \propto 
+\left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left(\bf{y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left(\bf{X'V^{-1}X} + \tau^{-2} {\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
+\end{equation} 
+
+
+Using (\ref{like}), The likelihood ratio $\frac{L(\theta')}{L(\theta)}$ is then represented as
+
+
+\begin{equation}
+\label{12}
+\frac{L({\bf y} \mid {\theta' = M'=M+1})}{L({\bf y} \mid {\theta = M})} = \frac{\left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}_c\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}'_{c} \left({\bf X'_{c}V^{-1}X_{c}} + \tau^{-2}{\bf I_{c}}\right) \boldsymbol{\hat\beta}_{c}\right)\right\rbrace}
+{\left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace}\\\\
+\end{equation}
+
+where the subscript $c$ denotes the candidate move type of the algorithm (a birth step in this case).\newline
+
+The death is very similar to the birth step, with a candidate likelihood of $L({\bf y} \mid \theta'=M'=M-1)$. There is no dimension change in the change step.
+
+
+### Prior Ratio
+
+For the birth step, our prior ratio $\frac{p(\theta')}{p(\theta)}$ is of the following form, based on @francom2019inferring:
+
+\begin{equation}
+\label{bprior}
+\frac{\lambda}{M+1} ~\bigg(\frac{1}{2}\bigg)^{J} {p\choose J}^{-1} \bigg(\frac{1}{J_{max}}\bigg)~ (M+1)
+\end{equation}
+
+where $\frac{\lambda}{M+1}$ is the prior for the number of basis functions with $M$ current knots, $\big(\frac{1}{2}\big)^{J}$  is the prior for the signs, ${p\choose J}^{-1}$ is the prior for the number of possible variable combinations to create basis functions with, $\frac{1}{J_{max}}$ is the prior for the number of interactions, and $M+1$ is accounting for ordering the basis functions.
+
+### Proposal Ratio 
+
+Our proposal ratio for a birth step $\frac{S(\theta'\rightarrow\theta)}{S(\theta\rightarrow\theta')}$ can be expressed as:
+
+\begin{equation}
+\label{bprop}
+\frac{\frac{1}{3} \frac{1}{M+1}}{\frac{1}{3} \frac{1}{J_{max}} {p \choose J}^{-1} (\frac{1}{2})^{J}}
+\end{equation}
+
+which is effectively the probability of selecting a death step multiplied by the probability of selecting a specific basis function to kill, over the probability of proposing the already-proposed basis function.
+
+The RJ-MCMC algorithm in `TBASS` calculates the likelihoods, priors, proposals, and acceptance ratios all on the log scale.
+
+
+## Gibbs Sampling 
+
+Once the basis function move type is complete, the model parameter values $\lambda$, $V_i$, $\sigma^2$, and $\boldsymbol{\beta}$ can then be sampled using Gibbs Sampling, since the full conditionals are all closed-form (@denison1998bayesian). The Gibbs Sampling steps is not unique to the birth step as they are performed after every RJ-MCMC iteration.
+
+Derived from section [2.3](#priors), the full conditionals are of the following form:
+
+\begin{equation}
+\lambda | \cdot\sim \Gamma\big(h_1 + M, ~h_2 + 1\big)
+\end{equation}
+
+\begin{equation}
+V_i | \cdot \sim \Gamma\left\lbrace\frac{\nu + 1}{2},~ \frac{1}{2\sigma^2} \sum_{i=1}^{n}{({\bf y} - {\bf X}\boldsymbol\beta)^2}\right\rbrace
+\end{equation}
+
+\begin{equation}
+\sigma^2 | \cdot\sim IG\left(\gamma_1 + \frac{n}{2}, ~\gamma_2 + \frac{1}{2} \left({\bf y} - {\bf X}\boldsymbol{\beta}\right)^t \left({\bf y} - {\bf X}\boldsymbol{\beta}\right)  \right)
+\end{equation}
+
+\begin{equation}
+\boldsymbol{\beta} | \cdot \sim \mathcal{N}\bigg( \boldsymbol{\hat\beta}, \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \bigg)
+\end{equation}
+
+where $\boldsymbol{\hat\beta}$ is denoted in (\ref{9}).\newline
+
+\pagebreak
+
+# Simulation with `tbass()` {#tbass}
+
+We now demonstrate the capabilities of the `TBASS` package using the main command, `tbass()`. For all parameter values of this function, please refer to the help documentation by running `?tbass` after loading the package.\newline
+
+**NOTE**: At this time, the package `mnormt` is REQUIRED in order to use `TBASS`. Please run `install.packages("mnormt")` to install the package. This dependency will be removed when the package is updated further. No other dependencies are required.\newline
+
+We begin by loading in the package and setting the seed for reproducibility. The package can be installed using the following command: `devtools::install_github("aashen12/TBASS")`.\newline
+
+```{r,echo=TRUE}
+set.seed(12)
+library(TBASS)
+```
+
+
+## Friedman Function Simulation
+
+We fit the Robust BMARS model to the infamous Friedman Function (Friedman, 1991):
+
+\begin{equation}
+\label{fried}
+10 ~sin(  \pi x_1 x_2) ~+~ 20(x_3 - 0.5)^2 ~+~ 10x_4 ~+~ 5x_5 
+\end{equation}
+
+In R:\newline
+
+```{r,echo=TRUE}
+f <- function(x){
+  10*sin(pi*x[,1]*x[,2]) + 20*(x[,3]-.5)^2 + 10*x[,4] + 5*x[,5]
+} 
+```
+
+We set our true value of $\sigma = 1$ and attempt to capture the same variability in using `tbass()`.
+
+```{r, echo=TRUE}
+sigma <- 1 # TRUE noise sd
+n <- 1000 # number of observations
+x <- matrix(runif(n*5), nrow = n, ncol = 5)
+y <- rnorm(n, mean = f(x), sd = sigma)
+```
+
+We then add extra noise to simulate a dataset with outliers, and categorize them for plotting later. 
+
+```{r}
+ind <- sample(n,size=10) # convert 10 points to outliers
+y[ind] <- rnorm(5, f(x[ind,]), 15)
+
+col <- rep(1,n) # for coloring the outlier points in a later plot
+col[ind] <- 2
+```
+
+From there, we can run the `tbass()` command with 30000 MCMC iterations (default 10000). Our first simulation is with $\nu = 10$ degrees of freedom to simulate a t-distribution with thicker tails.
+
+```{r,cache=TRUE}
+nmcmc <- 30000 #number of iterations
+tb <- tbass(x, y, nu = 10, nmcmc = nmcmc, verbose = TRUE)
+```
+
+
+## Results
+
+
+### Overfitting and Prediction
+
+We begin by plotting the number of basis functions throughout the entire simulation in Figure 3.
+
+```{r,echo=FALSE}
+fig <- 3
+plot(tb$nbasis, type = "l",
+     main = paste0("Figure ", fig, ": Trace plot of number of basis functions"),
+     xlab = "nmcmc", ylab = "Number of Basis Functions")
+```
+
+We see that there are 10 basis functions, indicating that there was no overfitting in the `TBASS` model.
+
+We then assess the accuracy of our predicted $\bf y$ values (${\bf X}\boldsymbol\beta$) vs the actual y-values in Figure 4.
+
+```{r,echo=FALSE}
+fig <- fig + 1
+plot(tb$X %*% tb$b, y, col = col,
+main=paste0("Figure ", fig, ": Predicted vs Actual Values"), 
+xlab = "Predicted y-values")
+abline(0,1,col="blue2",lwd=2.5)
+```
+
+We see that the prediction is quite accurate despite the presence of outliers.
+
+### Gibbs Sampling Results
+
+We set a burn-in value to the first 10% of samples.
+
+```{r}
+burn_final <- nmcmc/50
+burn <- 1:burn_final
+```
+
+From there, we plot our $\sigma$ values without the burn-in to ensure there was no variance inflation in Figure 5.
+
+```{r,echo=FALSE}
+fig <- fig + 1
+plot(tb$s2[-burn], type = "l",
+    main = paste0("Figure ", fig, ": TBASS Variance Trace Plot"),
+    xlab = "nmcmc", ylab = "variance")
+```
+
+From this plot, we see that our simulated $\sigma^2$ values are close to $1$, which matches our true value of $\sigma^2$ when we generated our data.
+
+We then plot our $\frac{1}{V_i}$ values to see if the outliers are accounted for. We thin every `nmcmc/100` iterations after the burn-in. See Figure 6.
+
+```{r,echo=FALSE}
+fig <- fig + 1
+matplot(sqrt(1/tb$v[seq(burn_final,nmcmc,nmcmc/100),]), type="l",
+  main = expression(paste("Figure 6: TBASS Trace Plot of ", V[i])),
+  xlab = "nmcmc", ylab = "V")
+```
+
+We see that the peaks in $V_i$ are accounting for the outliers, while the majority of $V_i$ values are in the bottom portion of the plot.
+
+## Comparison with `BASS`
+
+To account for the differences in behavior for Robust BMARS (`TBASS`) and Gaussian BMARS (`BASS`), we compare our results from TBASS to the output from BASS, which assumes a Gaussian likelihood.
+
+```{r, cache = TRUE}
+library(BASS)
+b <- bass(x,y,nmcmc = nmcmc) # automatically runs 10000 nmcmc iterations
+```
+
+### BASS Basis Functions
+
+Figure 7 shows that there are also 10 basis functions once the `BASS` algorithm is complete, similar to TBASS.
+
+```{r,echo=FALSE}
+fig <- fig + 1 # skips Fig 6
+plot(b$nbasis, type = "l",
+     main = paste0("Figure ", fig, ": BASS Basis Function Count"),
+     xlab = "nmcmc", ylab = "Number of Basis Functions")
+```
+
+
+### BASS Variance
+
+```{r,echo=FALSE}
+fig <- fig + 1
+plot(b$s2, type = "l",
+     main = paste0("Figure ", fig, ": BASS Variance Trace Plot"),
+     xlab = "nmcmc", ylab = "variance")
+```
+
+We see that the $\sigma^2$ from Gaussian BMARS is over two times as large as the $\sigma^2$ from `TBASS`, indicating that Gaussian BMARS is more sensitive to outliers and will inflate $\sigma^2$ when outliers are present.
+
+# Conclusion
+
+We constructed a generalized version of Gaussian Bayesian Multivariate Adaptive Regression to accommodate data with outliers or data that is non-Gaussian. This framework provides reliable and accurate parameter estimation. The R package `TBASS` adopts this framework from the original `BASS` package. These two models have been tested and compared to show their differences and demonstrate how a low value of $\nu$ can emulate the results from a Student's t-distribution.     
+
+# References
+
+
+
+
