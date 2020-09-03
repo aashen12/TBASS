@@ -16,3 +16,4 @@ Suggests:
 VignetteBuilder: knitr
 LinkingTo: 
     RcppArmadillo
+

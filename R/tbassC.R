@@ -8,9 +8,6 @@
 ## Has the same functionality as original tbass() function, except much faster
 ########################################################################
 
-#' @export
-#' @import mnormt
-
 #Rcpp::sourceCpp("/Users/andyshen/Desktop/Git/TBASS/TBASS/getdC.cpp")
 
 pos<-function(vec){
@@ -31,7 +28,7 @@ makeBasis<-function(signs,vars,knots,datat,degree=1){
 }
 
 tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE){
-  ticker = nmcmc/10
+  ticker <- nmcmc/10
   # see parameter verbose, should be a multiple of 100, 500, or 1000, default is 1000 for 10000 nmcmc iterations
   Xt<-t(X)
   n<-length(y)
