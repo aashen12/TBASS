@@ -1,3 +1,17 @@
+#######################################################
+# Authors: Andy Shen, Devin Francom, Los Alamos National Laboratory
+# github.com/aashen12/TBASS
+#######################################################
+
+########################################################################
+## FAST TBASS function using Rcpp and Rcpp Armadillo
+########################################################################
+
+#' @export
+#' @import mnormt
+
+#Rcpp::sourceCpp("/Users/andyshen/Desktop/Git/TBASS/TBASS/getdC.cpp")
+
 pos<-function(vec){
   (abs(vec)+vec)/2
 }
