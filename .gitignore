@@ -2,3 +2,8 @@ inst/doc
 *.rdb
 .Rproj.user
 .Rhistory
+*.o
+*.so
+*.pper
+*.pper
+*.pper
