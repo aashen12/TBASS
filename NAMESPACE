@@ -3,5 +3,6 @@
 export(pos)
 export(tbassC)
 import(Rcpp)
+import(RcppArmadillo)
 import(mnormt)
 useDynLib(TBASS)
