@@ -111,7 +111,7 @@ In creating the Robust BMARS model, we introduce new auxiliary parameters not us
 
 Similar to Gaussian BMARS, we let $y_i$ be our dependent variable and $\mathbf{x}_i$ be our independent variable representing a single basis function with $i = 1,...,n$. Without loss of generality, all independent variables $\mathbf{x}_i$ are scaled from zero to one (@francom2019bass).
 
-In the robust case, $y_i$ is modeled as
+In the robust case, the dependent variable $\bf y$ is modeled as
 
 \begin{equation}
 \label{2}
@@ -183,7 +183,7 @@ $$
 \Rightarrow L({\bf y}\mid\cdot) = (\tau^2)^{\frac{M+1}{2}} |{\bf V}|^{-1/2} ~\left|({\bf X^tV^{-1}X} +{\tau^{-2}} {\bf I})^{-1}\right|^{-1/2} \exp\bigg\lbrace -\frac{1}{2}\big({\bf y'V^{-1}y} - \boldsymbol{\hat\beta}^t ({\bf X^tV^{-1}X} +{\tau^{-2}} {\bf I})^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
 \end{equation}
 
-Equation (\ref{like}) is the likelihood for the current state model with $M$ basis functions.\newline
+Equation (\ref{like}) is the likelihood for the current model with $M$ basis functions.\newline
 
 ## Priors {#priors}
 
@@ -205,17 +205,17 @@ For $\lambda$, we assume a gamma prior such that $h_1 = h_2= 10$ by default.
 
 \begin{equation}
 \label{lamprior}
-\lambda \sim \Gamma \bigg(h_1, ~h_2\bigg)
+\lambda \sim \Gamma \left(h_1, ~h_2\right)
 \end{equation}
 
 
 ## Reversible-Jump Markov Chain Monte Carlo (RJ-MCMC)
 
-Like Gaussian BMARS, the robust algorithm adaptively builds, deletes, and modifies basis functions, sampling from candidate knot locations, signs, interaction degrees, and accepting or rejecting the candidate values using a RJ-MCMC algorithm to sample from the full posterior.
+Like Gaussian BMARS, the robust algorithm adaptively builds, deletes, and modifies basis functions, sampling candidate knot locations, signs, interaction degrees, and accepting or rejecting the candidate values using a RJ-MCMC algorithm.\newline
 
-RJ-MCMC is a generalization of the traditional Metropolis-Hastings algorithm in the sense that RJ-MCMC allows for parameter dimension change, allowing for simulation when the number of parameters is unknown. This is important for BMARS because we want to learn where knots should be placed and how many basis functions to have in our model, along with the degree of interaction for our basis functions. We also want to know if certain basis functions should be added, deleted, or changed.
+RJ-MCMC is a generalization of the traditional Metropolis-Hastings algorithm in the sense that RJ-MCMC allows for parameter dimension change, allowing for simulation when the number of parameters is unknown. This is important for BMARS because we want to learn where knots should be placed and how many basis functions to have in our model, along with the degree of interaction for our basis functions. We also want to know if certain basis functions should be added, deleted, or changed.\newline
 
-Our Robust generalization for the RJ-MCMC algorithm is largely based off the work by @denison1998bayesian.
+Our Robust generalization for the RJ-MCMC algorithm is largely based off the work by @denison1998bayesian.\newline
 
 The BMARS model has three possible move types, which is sampled using a discrete uniform:
 
@@ -256,7 +256,7 @@ L({\bf y} \mid {\theta' = M'}) \propto
 \end{equation} 
 
 
-Using (\ref{like}), The likelihood ratio $\frac{L(\theta')}{L(\theta)}$ is then represented as
+Using (\ref{like}), the likelihood ratio $\frac{L(\theta')}{L(\theta)}$ is then represented as
 
 
 \begin{equation}
@@ -297,7 +297,7 @@ The RJ-MCMC algorithm in `TBASS` calculates the likelihoods, priors, proposals, 
 
 ## Gibbs Sampling 
 
-Once the basis function move type is complete, the model parameter values $\lambda$, $V_i$, $\sigma^2$, and $\boldsymbol{\beta}$ can then be sampled using Gibbs Sampling, since the full conditionals are all closed-form (@denison1998bayesian). The Gibbs Sampling steps is not unique to the birth step as they are performed after every RJ-MCMC iteration.
+Once the basis function move type is complete, the model parameter values $\lambda$, $V_i$, $\sigma^2$, and $\boldsymbol{\beta}$ can then be sampled using Gibbs Sampling, since the full conditionals are all closed-form (@denison1998bayesian). The Gibbs Sampling steps shown below are not unique to the birth step as they are performed after every RJ-MCMC iteration.
 
 Derived from section [2.3](#priors), the full conditionals are of the following form:
 
@@ -327,7 +327,7 @@ We now demonstrate the capabilities of the `TBASS` package using the main comman
 
 **NOTE**: At this time, the package `mnormt` is REQUIRED in order to use `TBASS`. Please run `install.packages("mnormt")` to install the package. This dependency will be removed when the package is updated further. No other dependencies are required.\newline
 
-We begin by loading in the package and setting the seed for reproducibility. The package can be installed using the following command: `devtools::install_github("aashen12/TBASS")`.\newline
+We begin by loading in the package and setting the seed for reproducibility. The package can be installed using the following command: `devtools::install_github("aashen12/TBASS")` which requires installing the package `devtools.`\newline
 
 ```{r,echo=TRUE}
 set.seed(12)
@@ -347,7 +347,7 @@ We fit the Robust BMARS model to the infamous Friedman Function (Friedman, 1991)
 In R:\newline
 
 ```{r,echo=TRUE}
-f <- function(x){
+f <- function(x) {
   10*sin(pi*x[,1]*x[,2]) + 20*(x[,3]-.5)^2 + 10*x[,4] + 5*x[,5]
 } 
 ```
@@ -364,7 +364,7 @@ y <- rnorm(n, mean = f(x), sd = sigma)
 We then add extra noise to simulate a dataset with outliers, and categorize them for plotting later. 
 
 ```{r}
-ind <- sample(n,size=10) # convert 10 points to outliers
+ind <- sample(n, size = 10) # convert 10 points to outliers
 y[ind] <- rnorm(5, f(x[ind,]), 15)
 
 col <- rep(1,n) # for coloring the outlier points in a later plot
@@ -409,14 +409,14 @@ We see that the prediction is quite accurate despite the presence of outliers.
 
 ### Gibbs Sampling Results
 
-We set a burn-in value to the first 10% of samples.
+We set a burn-in value to the first 50% of samples.
 
 ```{r}
 burn_final <- nmcmc/50
 burn <- 1:burn_final
 ```
 
-From there, we plot our $\sigma$ values without the burn-in to ensure there was no variance inflation in Figure 5.
+From there, we plot our $\sigma$ values in Figure 5 to ensure there was no variance inflation.
 
 ```{r,echo=FALSE}
 fig <- fig + 1
