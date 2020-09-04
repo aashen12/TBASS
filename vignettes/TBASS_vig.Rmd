@@ -329,6 +329,10 @@ We now demonstrate the capabilities of the `TBASS` package using the main comman
 
 We begin by loading in the package and setting the seed for reproducibility. The package can be installed using the following command: `devtools::install_github("aashen12/TBASS")` which requires installing the package `devtools.`\newline
 
+When installing `TBASS`, you may be asked to update packages to a more recent version. Please update all packages (option 1). 
+
+When installing `RcppArmadillo`, you may be asked to install the package from sources which need compilation. Please type "no".
+
 ```{r,echo=TRUE}
 set.seed(12)
 library(TBASS)
