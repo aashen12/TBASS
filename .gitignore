@@ -1,3 +1,4 @@
 inst/doc
 *.rdb
 .Rproj.user
+.Rhistory

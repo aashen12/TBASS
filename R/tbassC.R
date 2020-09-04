@@ -26,6 +26,32 @@ makeBasis<-function(signs,vars,knots,datat,degree=1){
   }
 }
 
+
+#' Includes auxiliary functions used in tbass() function.
+#' pos() takes a vector x and returns max(0, x);
+#' getd() uses Cholesky decomposition for TBASS likelihood to return V matrix and beta_hat;
+#' makeBasis() creates a basis function given signs, variables, knot locations and data or X matrix.
+#' @title t-Distributed Bayesian Adaptive Spline Surfaces (TBASS)
+#' @name tbass
+#' @description Robust BMARS function for Student's t-distributed likelihoods. See bass function in package BASS. Returns the estimated model parameters.
+#' @usage tbass(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE)
+#' @param X a matrix of predictor values
+#' @param y vector of response data, ideally with noise
+#' @param max.int maximum degree of interaction, default is 3
+#' @param max.basis maximum number of basis functions permitted by function, default is 50
+#' @param tau2 prior for regression coefficients
+#' @param nu degrees of freedom for Student's t distribution, default 10
+#' @param nmcmc number of MCMC iterations, default 10000
+#' @param g1 shape for IG prior on sigma^2, default 0
+#' @param g2 scale for IG prior on sigma^2, default 0
+#' @param h1 shape for gamma prior on lambda, default 10
+#' @param h2 scale for gamma prior on lambda, default 10
+#' @param verbose prints running output every ticker iterations if TRUE, can be changed
+#' @return a list object with estimated model parameters
+#' @export
+#' @import mnormt
+#' @import Rcpp
+#' @useDynLib TBASS
 tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE){
   ticker <- nmcmc/10
   # see parameter verbose, should be a multiple of 100, 500, or 1000, default is 1000 for 10000 nmcmc iterations
