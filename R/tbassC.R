@@ -51,6 +51,7 @@ makeBasis<-function(signs,vars,knots,datat,degree=1){
 #' @export
 #' @import mnormt
 #' @import Rcpp
+#' @import RcppArmadillo
 #' @useDynLib TBASS
 tbassC <- function(X,y,max.int=3,max.basis=50,tau2=10^4,nu=10,nmcmc=10000,g1=0,g2=0,h1=10,h2=10,verbose=FALSE){
   ticker <- nmcmc/10
