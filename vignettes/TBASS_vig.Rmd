@@ -325,7 +325,12 @@ where $\boldsymbol{\hat\beta}$ is denoted in (\ref{9}).\newline
 
 We now demonstrate the capabilities of the `TBASS` package using the main command, `tbassC()`. The `C` at the end of the command indicates that it uses an `Rcpp` interface (C++ functions) to optimize computation time. For all parameter values of this function, please refer to the help documentation by running `?tbassC` after loading the package.\newline
 
-**NOTE**: At this time, the package `mnormt` is REQUIRED in order to use `TBASS`. Please run `install.packages("mnormt")` to install the package. This dependency will be removed when the package is updated further. No other dependencies are required.\newline
+**Software Requirements and Dependencies**
+
+At this time, you must have R Version 4.0.2 (Taking Off Again) or higher to install and use `TBASS`.
+
+The package `mnormt` is REQUIRED in order to use `TBASS`. Please run `install.packages("mnormt")` to install the package. This dependency will be removed when the package is updated further. No other dependencies are required.\newline
+
 
 We begin by loading in the package and setting the seed for reproducibility. The package can be installed using the following command: `devtools::install_github("aashen12/TBASS")` which requires installing the package `devtools.`\newline
 
