@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  8 SEP 2020 10:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  8 SEP 2020 10:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1111,10 +1111,15 @@ Underfull \hbox (badness 10000) in paragraph at lines 485--489
 
  []
 
-LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 498.
 
-Underfull \hbox (badness 10000) in paragraph at lines 515--516
+Underfull \hbox (badness 10000) in paragraph at lines 496--498
+
+ []
+
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 501.
+
+Underfull \hbox (badness 10000) in paragraph at lines 518--519
 
  []
 
@@ -1125,7 +1130,7 @@ File: TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf Graphic file (type pd
 f)
 <use TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf>
 Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf us
-ed on input line 571.
+ed on input line 574.
 (pdftex.def)             Requested size: 441.66911pt x 283.06975pt.
 
 <TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf, id=141, 434.62375pt x 286
@@ -1134,7 +1139,7 @@ File: TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (type pd
 f)
 <use TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf>
 Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf us
-ed on input line 579.
+ed on input line 582.
 (pdftex.def)             Requested size: 434.6293pt x 286.07242pt.
 [9 <./TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf>]
 <TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf, id=159, 444.66125pt x 283
@@ -1143,7 +1148,7 @@ File: TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf Graphic file (type pd
 f)
 <use TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf>
 Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf us
-ed on input line 599.
+ed on input line 602.
 (pdftex.def)             Requested size: 444.66016pt x 283.0568pt.
 [10 <./TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf>]
 <TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf, id=174, 436.63126pt x 285
@@ -1152,12 +1157,12 @@ File: TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pd
 f)
 <use TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf>
 Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf us
-ed on input line 609.
+ed on input line 612.
 (pdftex.def)             Requested size: 436.63019pt x 285.0643pt.
 [11 <./TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf> <./TBASS_vig_files/
 figure-latex/unnamed-chunk-14-1.pdf>]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 616.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 619.
 
 <TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf, id=194, 440.64626pt x 283
 .0575pt>
@@ -1165,7 +1170,7 @@ File: TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf Graphic file (type pd
 f)
 <use TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf>
 Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf us
-ed on input line 667.
+ed on input line 670.
 (pdftex.def)             Requested size: 440.66533pt x 283.06975pt.
 [12]
 <TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf, id=203, 436.63126pt x 283
@@ -1174,17 +1179,17 @@ File: TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf Graphic file (type pd
 f)
 <use TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf>
 Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf us
-ed on input line 672.
+ed on input line 675.
 (pdftex.def)             Requested size: 436.63019pt x 283.0568pt.
 [13 <./TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf> <./TBASS_vig_files/
 figure-latex/unnamed-chunk-17-1.pdf>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 715.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 718.
 [14]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 715.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 718.
 (./TBASS_vig.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 715.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 715.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 715.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 718.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 718.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 718.
  ) 
 Here is how much of TeX's memory you used:
  13865 strings out of 492995
@@ -1193,7 +1198,7 @@ Here is how much of TeX's memory you used:
  17033 multiletter control sequences out of 15000+600000
  91221 words of font info for 121 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,11n,38p,747b,343s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,11n,38p,747b,374s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
 texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/20
 17/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local/texlive/2017/texmf-dist
@@ -1220,7 +1225,7 @@ t/fonts/type1/public/lm/lmsy7.pfb></usr/local/texlive/2017/texmf-dist/fonts/typ
 e1/public/lm/lmtk10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/
 lm/lmtt10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmtti10
 .pfb>
-Output written on TBASS_vig.pdf (14 pages, 1316912 bytes).
+Output written on TBASS_vig.pdf (14 pages, 1317023 bytes).
 PDF statistics:
  414 PDF objects out of 1000 (max. 8388607)
  347 compressed objects within 4 object streams
