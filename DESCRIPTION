@@ -3,9 +3,9 @@ Type: Package
 Title: t-Distributed Bayesian Adaptive Spline Surfaces
 Version: 0.1.0
 Author: Andy Shen, Devin Francom
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: Andy Shen <aashen@g.u>
 Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+    Use four spaces when indenting paragraphs within the Descla.educription.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
