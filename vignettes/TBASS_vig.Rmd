@@ -103,7 +103,7 @@ We want to extend the theory behind frequentist univariate spline regression to 
 
 In the presence of outliers, Gaussian BMARS will attempt to capture the excess noise by either adding basis functions (overfitting) or inflating the variance term ($\sigma^2$). The Robust BMARS model accounts for this sensitivity to outliers by avoiding overfitting or variance inflation when the degrees of freedom ($\nu$) are low. When $\nu$ is high, the t-distribution closely mimics a normal distribution, so the Robust BMARS model behaves in a similar way.
 
-The function used to fit the Robust BMARS model in the `TBASS` package is the `tbassC()` command (see section [3](#tbass)).
+The function used to fit the Robust BMARS model in the `TBASS` package is the `tbass()` command (see section [3](#tbass)).
 
 ## Likelihood
 
@@ -321,9 +321,9 @@ where $\boldsymbol{\hat\beta}$ is denoted in (\ref{9}).\newline
 
 \pagebreak
 
-# Simulation with `tbassC()` {#tbass}
+# Simulation with `tbass()` {#tbass}
 
-We now demonstrate the capabilities of the `TBASS` package using the main command, `tbassC()`. The `C` at the end of the command indicates that it uses an `Rcpp` interface (C++ functions) to optimize computation time. For all parameter values of this function, please refer to the help documentation by running `?tbassC` after loading the package.\newline
+We now demonstrate the capabilities of the `TBASS` package using the main command, `tbass()`. The command uses an `Rcpp` interface (C++ functions) to optimize computation time. For all parameter values of this function, please refer to the help documentation by running `?tbass` after loading the package.\newline
 
 **Software Requirements and Dependencies**
 
@@ -361,7 +361,7 @@ f <- function(x) {
 } 
 ```
 
-We set our true value of $\sigma = 1$ and attempt to capture the same variability in using `tbassC()`.
+We set our true value of $\sigma = 1$ and attempt to capture the same variability in using `tbass()`.
 
 ```{r, echo=TRUE}
 sigma <- 1 # TRUE noise sd
@@ -380,11 +380,11 @@ col <- rep(1,n) # for coloring the outlier points in a later plot
 col[ind] <- 2
 ```
 
-From there, we can run the `tbassC()` command with 30000 MCMC iterations (default 10000). Our first simulation is with $\nu = 10$ degrees of freedom to simulate a t-distribution with thicker tails.
+From there, we can run the `tbass()` command with 30000 MCMC iterations (default 10000). Our first simulation is with $\nu = 10$ degrees of freedom to simulate a t-distribution with thicker tails.
 
 ```{r,cache=TRUE}
 nmcmc <- 30000 #number of iterations
-tb <- tbassC(x, y, nu = 10, nmcmc = nmcmc, verbose = FALSE)
+tb <- tbass(x, y, nu = 10, nmcmc = nmcmc, verbose = FALSE)
 ```
 
 

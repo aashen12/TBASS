@@ -1,9 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  7 SEP 2020 15:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  8 SEP 2020 10:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**TBASS_vig.tex
-(./TBASS_vig.tex
+**/private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3
+b7352c0121b.dir/TBASS_vig.tex
+
+(/private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig.tex
 LaTeX2e <2017-04-15>
 Babel <3.10> and hyphenation patterns for 84 language(s) loaded.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/base/article.cls
@@ -1003,22 +1006,32 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 132.
 
-<TBASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf, id=6, 434.62375pt x 283.05
-75pt>
-File: TBASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pdf
-)
-<use TBASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf>
-Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf use
-d on input line 148.
+</private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf, id=6, 434.62
+375pt x 283.0575pt>
+File: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previ
+ew-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf Graphic 
+file (type pdf)
+
+<use /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf>
+Package pdftex.def Info: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn
+/T/RtmpVzCuFi/preview-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chu
+nk-4-1.pdf used on input line 148.
 (pdftex.def)             Requested size: 434.6492pt x 283.07407pt.
 
-<TBASS_vig_files/figure-latex/unnamed-chunk-4-2.pdf, id=7, 434.62375pt x 283.05
-75pt>
-File: TBASS_vig_files/figure-latex/unnamed-chunk-4-2.pdf Graphic file (type pdf
-)
-<use TBASS_vig_files/figure-latex/unnamed-chunk-4-2.pdf>
-Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-4-2.pdf use
-d on input line 149.
+</private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-4-2.pdf, id=7, 434.62
+375pt x 283.0575pt>
+File: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previ
+ew-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-4-2.pdf Graphic 
+file (type pdf)
+
+<use /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-4-2.pdf>
+Package pdftex.def Info: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn
+/T/RtmpVzCuFi/preview-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chu
+nk-4-2.pdf used on input line 149.
 (pdftex.def)             Requested size: 434.6492pt x 283.07407pt.
 
 Underfull \hbox (badness 10000) in paragraph at lines 148--150
@@ -1027,9 +1040,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 148--150
 
 [1
 
-{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2 <./T
-BASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf> <./TBASS_vig_files/figure-la
-tex/unnamed-chunk-4-2.pdf>]
+{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2 </pr
+ivate/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b7352
+c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-4-1.pdf> </private/var/fo
+lders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b7352c0121b.dir/T
+BASS_vig_files/figure-latex/unnamed-chunk-4-2.pdf>]
 LaTeX Font Info:    Try loading font information for T1+lmtt on input line 174.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/lm/t1lmtt.fd
@@ -1119,81 +1134,117 @@ Underfull \hbox (badness 10000) in paragraph at lines 515--516
  []
 
 [8]
-<TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf, id=140, 441.65pt x 283.05
-75pt>
-File: TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf Graphic file (type pd
-f)
-<use TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf>
-Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf us
-ed on input line 571.
+</private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf, id=140, 441
+.65pt x 283.0575pt>
+File: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previ
+ew-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf Graphic
+ file (type pdf)
+
+<use /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf>
+Package pdftex.def Info: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn
+/T/RtmpVzCuFi/preview-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chu
+nk-10-1.pdf used on input line 571.
 (pdftex.def)             Requested size: 441.66911pt x 283.06975pt.
 
-<TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf, id=141, 434.62375pt x 286
-.06876pt>
-File: TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (type pd
-f)
-<use TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf>
-Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf us
-ed on input line 579.
+</private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf, id=141, 434
+.62375pt x 286.06876pt>
+File: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previ
+ew-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf Graphic
+ file (type pdf)
+
+<use /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf>
+Package pdftex.def Info: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn
+/T/RtmpVzCuFi/preview-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chu
+nk-11-1.pdf used on input line 579.
 (pdftex.def)             Requested size: 434.6293pt x 286.07242pt.
-[9 <./TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf>]
-<TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf, id=159, 444.66125pt x 283
-.0575pt>
-File: TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf Graphic file (type pd
-f)
-<use TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf>
-Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf us
-ed on input line 599.
+[9 </private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview
+-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf>]
+</private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf, id=159, 444
+.66125pt x 283.0575pt>
+File: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previ
+ew-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf Graphic
+ file (type pdf)
+
+<use /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf>
+Package pdftex.def Info: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn
+/T/RtmpVzCuFi/preview-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chu
+nk-13-1.pdf used on input line 599.
 (pdftex.def)             Requested size: 444.66016pt x 283.0568pt.
-[10 <./TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf>]
-<TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf, id=174, 436.63126pt x 285
-.065pt>
-File: TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pd
-f)
-<use TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf>
-Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf us
-ed on input line 609.
+[10 </private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf>]
+</private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf, id=174, 436
+.63126pt x 285.065pt>
+File: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previ
+ew-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf Graphic
+ file (type pdf)
+
+<use /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf>
+Package pdftex.def Info: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn
+/T/RtmpVzCuFi/preview-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chu
+nk-14-1.pdf used on input line 609.
 (pdftex.def)             Requested size: 436.63019pt x 285.0643pt.
-[11 <./TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf> <./TBASS_vig_files/
-figure-latex/unnamed-chunk-14-1.pdf>]
+[11 </private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf> </priva
+te/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b7352c01
+21b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf>]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 616.
 
-<TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf, id=194, 440.64626pt x 283
-.0575pt>
-File: TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf Graphic file (type pd
-f)
-<use TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf>
-Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf us
-ed on input line 657.
+</private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf, id=194, 440
+.64626pt x 283.0575pt>
+File: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previ
+ew-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf Graphic
+ file (type pdf)
+
+<use /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf>
+Package pdftex.def Info: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn
+/T/RtmpVzCuFi/preview-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chu
+nk-16-1.pdf used on input line 667.
 (pdftex.def)             Requested size: 440.66533pt x 283.06975pt.
 [12]
-<TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf, id=203, 436.63126pt x 283
-.0575pt>
-File: TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf Graphic file (type pd
-f)
-<use TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf>
-Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf us
-ed on input line 662.
+</private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b
+7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf, id=203, 436
+.63126pt x 283.0575pt>
+File: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previ
+ew-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf Graphic
+ file (type pdf)
+
+<use /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf>
+Package pdftex.def Info: /private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn
+/T/RtmpVzCuFi/preview-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chu
+nk-17-1.pdf used on input line 672.
 (pdftex.def)             Requested size: 436.63019pt x 283.0568pt.
-[13 <./TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf> <./TBASS_vig_files/
-figure-latex/unnamed-chunk-17-1.pdf>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 705.
+[13 </private/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/previe
+w-3b7352c0121b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-16-1.pdf> </priva
+te/var/folders/2c/k1x5_cz97_54d1wwy3ps0yt40000gn/T/RtmpVzCuFi/preview-3b7352c01
+21b.dir/TBASS_vig_files/figure-latex/unnamed-chunk-17-1.pdf>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 715.
 [14]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 705.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 715.
 (./TBASS_vig.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 705.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 705.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 705.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 715.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 715.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 715.
  ) 
 Here is how much of TeX's memory you used:
- 13871 strings out of 492995
- 201798 string characters out of 6132704
- 314308 words of memory out of 5000000
+ 13866 strings out of 492995
+ 204989 string characters out of 6132704
+ 314306 words of memory out of 5000000
  17033 multiletter control sequences out of 15000+600000
- 91470 words of font info for 124 fonts, out of 8000000 for 9000
+ 91221 words of font info for 121 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,11n,38p,747b,343s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,11n,38p,840b,343s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
 texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/20
 17/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local/texlive/2017/texmf-dist
@@ -1220,7 +1271,7 @@ t/fonts/type1/public/lm/lmsy7.pfb></usr/local/texlive/2017/texmf-dist/fonts/typ
 e1/public/lm/lmtk10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/
 lm/lmtt10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmtti10
 .pfb>
-Output written on TBASS_vig.pdf (14 pages, 1250366 bytes).
+Output written on TBASS_vig.pdf (14 pages, 1318386 bytes).
 PDF statistics:
  414 PDF objects out of 1000 (max. 8388607)
  347 compressed objects within 4 object streams
