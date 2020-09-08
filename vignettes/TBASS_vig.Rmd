@@ -403,7 +403,7 @@ plot(tb$nbasis, type = "l",
      xlab = "nmcmc", ylab = "Number of Basis Functions")
 ```
 
-We see that there are 10 basis functions, indicating that there was no overfitting in the `TBASS` model.
+We see that there are 9 basis functions from `BASS`, indicating that there was no overfitting in the `TBASS` model with 10 basis functions.
 
 We then assess the accuracy of our predicted $\bf y$ values (${\bf X}\boldsymbol\beta$) vs the actual y-values in Figure 4.
 
