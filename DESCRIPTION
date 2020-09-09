@@ -6,7 +6,7 @@ Author: Andy Shen, Devin Francom
 Maintainer: Andy Shen <aashen@g.u>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Descla.educription.
-License: What license is it under?
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
@@ -21,3 +21,4 @@ Imports:
     mnormt,
     Rcpp,
     RcppArmadillo
+
