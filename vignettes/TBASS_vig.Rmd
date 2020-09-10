@@ -399,7 +399,7 @@ col[ind] <- 2
 From there, we can run the `tbass()` command with 30000 MCMC iterations (default 10000). Our first simulation is with $\nu = 10$ degrees of freedom to simulate a t-distribution with thicker tails.
 
 ```{r,cache=TRUE}
-nmcmc <- 300 #number of iterations
+nmcmc <- 30000 #number of iterations
 tb <- tbass(x, y, nu = 10, nmcmc = nmcmc, verbose = FALSE)
 ```
 
