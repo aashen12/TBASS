@@ -52,7 +52,7 @@ Splines are a commonly used regression tool for fitting nonlinear data, both uni
 {\bf X}_{ij} = [s_i(x_{j} - t_{i})]_{+}
 \end{equation}
 
-Equation (\ref{1}) is used to calculate the ith column of the ${\bf X}$ matrix of basis functions, where $s_i \in \lbrace-1,1\rbrace$, $t_i$ is called a **knot** and $[a]_{+} = \max(0, a)$.
+Equation (\ref{1}) is used to calculate the ijth element of the ${\bf X}$ matrix of basis functions, where $s_i \in \lbrace-1,1\rbrace$, $t_i$ is called a **knot** and $[a]_{+} = \max(0, a)$.
 
 For example, given the nonlinear data shown in Figure 1 below, we can use (\ref{1}) to fit a spline model shown in Figure 2.
 
