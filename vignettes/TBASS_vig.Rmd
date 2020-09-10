@@ -80,7 +80,7 @@ generate_spline <- function(tvec, nknot = length(tvec)) {
   pred <- predict(mod)
 
   
-  plot(x,y,main=paste0("Figure ",2," : Univariate Spline Function"))
+  plot(x,y)
   lines(x, pred, type = "l", lwd = 5, col="blue1")
   #list(basis=mBmat)
 }
@@ -89,8 +89,8 @@ t <- c(0, 0.525, 0.875)
 
 \  
   
-```{r,echo=FALSE}
-plot(x,y,main=paste0("Figure ",1," : Univariate Nonlinear Data"))
+```{r,echo=FALSE,fig.cap = "Univariate nonlinear data"}
+plot(x,y)
 
 ```
 
@@ -411,22 +411,16 @@ tb <- tbass(x, y, nu = 10, nmcmc = nmcmc, verbose = FALSE)
 
 We begin by plotting the number of basis functions throughout the entire simulation in Figure 3.
 
-```{r,echo=FALSE}
-fig <- 3
-plot(tb$nbasis, type = "l",
-     main = paste0("Figure ", fig, ": Trace plot of number of basis functions"),
-     xlab = "nmcmc", ylab = "Number of Basis Functions")
+```{r,echo=FALSE,fig.cap="Trace plot of number of basis functions"}
+plot(tb$nbasis, type = "l", xlab = "nmcmc", ylab = "Number of Basis Functions")
 ```
 
 We see that there are 9 basis functions from `BASS`, indicating that there was no overfitting in the `TBASS` model with 10 basis functions.
 
 We then assess the accuracy of our predicted $\bf y$ values (${\bf X}\boldsymbol\beta$) vs the actual y-values in Figure 4.
 
-```{r,echo=FALSE}
-fig <- fig + 1
-plot(tb$X %*% tb$b, y, col = col,
-main=paste0("Figure ", fig, ": Predicted vs Actual Values"), 
-xlab = "Predicted y-values")
+```{r,echo=FALSE,fig.cap = "Predicted vs Actual Values"}
+plot(tb$X %*% tb$b, y, col = col, xlab = "Predicted y-values")
 abline(0,1,col="blue2",lwd=2.5)
 ```
 
@@ -443,22 +437,17 @@ burn <- 1:burn_final
 
 From there, we plot our $\sigma$ values in Figure 5 to ensure there was no variance inflation.
 
-```{r,echo=FALSE}
-fig <- fig + 1
-plot(tb$s2[-burn], type = "l",
-    main = paste0("Figure ", fig, ": TBASS Variance Trace Plot"),
-    xlab = "nmcmc", ylab = "variance")
+```{r,echo=FALSE,fig.cap = "TBASS variance trace plot"}
+plot(tb$s2[-burn], type = "l", xlab = "nmcmc", ylab = "variance")
 ```
 
 From this plot, we see that our simulated $\sigma^2$ values are close to $1$, which matches our true value of $\sigma^2$ when we generated our data.
 
 We then plot our $\frac{1}{V_i}$ values to see if the outliers are accounted for. We thin every `nmcmc/100` iterations after the burn-in. See Figure 6.
 
-```{r,echo=FALSE}
-fig <- fig + 1
-matplot(sqrt(1/tb$v[seq(burn_final,nmcmc,nmcmc/100),]), type="l",
-  main = expression(paste("Figure 6: TBASS Trace Plot of ", V[i])),
-  xlab = "nmcmc", ylab = "V")
+```{r,echo=FALSE,fig.cap = "TBASS trace plot of V_i"}
+matplot(sqrt(1/tb$v[seq(burn_final,nmcmc,nmcmc/100),]), 
+        type="l", xlab = "nmcmc", ylab = "V")
 ```
 
 We see that the peaks in $V_i$ are accounting for the outliers, while the majority of $V_i$ values are in the bottom portion of the plot.
@@ -476,21 +465,15 @@ b <- bass(x,y,nmcmc = 10000) # automatically runs 10000 nmcmc iterations
 
 Figure 7 shows that there are also 10 basis functions once the `BASS` algorithm is complete, similar to TBASS.
 
-```{r,echo=FALSE}
-fig <- fig + 1 # skips Fig 6
-plot(b$nbasis, type = "l",
-     main = paste0("Figure ", fig, ": BASS Basis Function Count"),
-     xlab = "nmcmc", ylab = "Number of Basis Functions")
+```{r,echo=FALSE,fig.cap = "BASS Basis Function Count"}
+plot(b$nbasis, type = "l", xlab = "nmcmc", ylab = "Number of Basis Functions")
 ```
 
 
 ### BASS Variance
 
-```{r,echo=FALSE}
-fig <- fig + 1
-plot(b$s2, type = "l",
-     main = paste0("Figure ", fig, ": BASS Variance Trace Plot"),
-     xlab = "nmcmc", ylab = "variance")
+```{r,echo=FALSE,fig.cap = "BASS Variance Trace Plot"}
+plot(b$s2, type = "l", xlab = "nmcmc", ylab = "variance")
 ```
 
 We see that the $\sigma^2$ from Gaussian BMARS is over two times as large as the $\sigma^2$ from `TBASS`, indicating that Gaussian BMARS is more sensitive to outliers and will inflate $\sigma^2$ when outliers are present.
