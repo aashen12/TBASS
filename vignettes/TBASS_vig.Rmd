@@ -45,14 +45,14 @@ The R package TBASS is an extension of the BASS package created by Francom and S
 
 # Introduction
 
-Splines are a commonly used regression tool for fitting nonlinear data, both univariate and multivariate. Splines can act as basis functions, where each basis function combines to form the ${\bf X}$ matrix. The simplest way to create the ith basis functions can be represented as
+Splines are a commonly used regression tool for fitting nonlinear data, both univariate and multivariate. Splines can act as basis functions, where each basis function combines to form the ${\bf X}$ matrix. The simplest way to create the ith basis functions can be represented as $\prod_{i=1}^{n}$
 
 \begin{equation}
 \label{1}
-{\bf X}_{ij} = [s_i(x_{j} - t_{i})]_{+}
+\prod{\bf B}_{ij} = [s_i(x_{j} - t_{i})]_{+}
 \end{equation}
 
-Equation (\ref{1}) is used to calculate the ijth element of the ${\bf X}$ matrix of basis functions, where $s_i \in \lbrace-1,1\rbrace$, $t_i$ is called a **knot** and $[a]_{+} = \max(0, a)$.
+Equation (\ref{1}) is used to calculate the ijth element of the ${\bf B}$ matrix of basis functions, where $s_i \in \lbrace-1,1\rbrace$, $t_i$ is called a **knot** and $[a]_{+} = \max(0, a)$.
 
 For example, given the nonlinear data shown in Figure 1 below, we can use (\ref{1}) to fit a spline model shown in Figure 2.
 
@@ -91,9 +91,12 @@ t <- c(0, 0.525, 0.875)
   
 ```{r,echo=FALSE}
 plot(x,y,main=paste0("Figure ",1," : Univariate Nonlinear Data"))
-generate_spline(t)
+
 ```
 
+```{r,echo=FALSE,fig.cap = "The blue line represents the spline function fit to the data using three knots"}
+generate_spline(t)
+```
 
 \pagebreak
 
@@ -111,59 +114,91 @@ The function used to fit the Robust BMARS model in the `TBASS` package is the `t
 
 In creating the Robust BMARS model, we introduce new auxiliary parameters not used in the Gaussian model (@gelman2013bayesian).  
 
-Similar to Gaussian BMARS, we let $y_i$ be our dependent variable and $\mathbf{x}_i$ be our independent variable representing a single basis function with $i = 1,...,n$. Without loss of generality, all independent variables $\mathbf{x}_i$ are scaled from zero to one (@francom2019bass).
+Similar to Gaussian BMARS, we let $y_i$ be our dependent variable and $\mathbf{x}_i$ be our independent variable. Without loss of generality, all independent variables $\mathbf{x}_i$ are scaled from zero to one (@francom2019bass).
 
 In the robust case, the dependent variable $\bf y$ is modeled as
 
 \begin{equation}
 \label{2}
-{\bf y} = {\bf X}\boldsymbol{\beta} + {\boldsymbol\epsilon}, \quad {\boldsymbol\epsilon} \sim t_{\nu}\left({\bf 0}, ~ \sigma^2 {\bf V}^{-1}\right)
+{\bf y} = {\bf B}\boldsymbol{\beta} + {\boldsymbol\epsilon}, \quad {\boldsymbol\epsilon} \sim t_{\nu}\left({\bf 0}, ~ \sigma^2 {\bf I}\right)
 \end{equation}
 
-and
+or equivalently,
 
 \begin{equation}
 \label{3}
-y_i | V_i \sim \mathcal{N}\left({\bf X}\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right)
+y_i | V_i \sim \mathcal{N}\left({\bf B_{i}}'\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right).
 \end{equation}
 
-where ${\bf X}$ represents the matrix of basis functions by column, $\boldsymbol \beta$ is the vector of regression coefficients, $\boldsymbol\epsilon$ is the error term,  $\nu$ represents the degrees of freedom in a Student's t-distribubtion, $\sigma^2$ is the variance term for $y_i$, and ${\bf V}^{-1} = diag(1/V_1...1/V_n)$ where $V_i$ is the variance estimate of $y_i$.
+We also assume a Gamma prior with shape and rate $\frac{\nu}{2}$ for $V_i$, such that
+
+\begin{equation}
+\label{vi}
+V_i \sim \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg)
+\end{equation}
+
+where ${\bf B}$ represents the matrix of basis functions by column, $\boldsymbol \beta$ is the vector of regression coefficients, $\boldsymbol\epsilon$ is the error term, $\nu$ represents the degrees of freedom in a Student's t-distribution, and $\sigma^2\frac{\nu}{\nu - 2}$ is the variance term for $y_i$.
+
 
 The basis functions themselves are produced the same way as in the `BASS` package by @francom2019bass.
 
-### Regression Coefficients
+
+## Priors {#priors}
 
 Our regression coefficients $\boldsymbol\beta$ follow a Gaussian prior such that
 
 \begin{equation}
 \label{8}
-\boldsymbol\beta \sim \mathcal{N} \left( 0,~\tau^2 {\bf I} \right)
+\boldsymbol\beta \sim \mathcal{N} \left( 0,~\tau^2 {\bf I} \right).
 \end{equation}
 
+We assume an Inverse-Gamma prior for $\sigma^2$ with default shape $\gamma_1 = 0$ and default rate $\gamma_2=0$ such that
 
-In the Student's t-distribution, we can marginalize the posterior for $\boldsymbol\beta$ and $\sigma^2$ to obtain the regression estimate $\boldsymbol{\hat{\beta}}$:
+\begin{equation}
+\label{s2}
+\sigma^2 \sim IG~(\gamma_1,~\gamma_2).
+\end{equation}
+
+For $\lambda$, we assume a gamma prior such that $h_1 = h_2= 10$ by default:
+
+\begin{equation}
+\label{lamprior}
+\lambda \sim \Gamma \left(h_1, ~h_2\right).
+\end{equation}
+
+We use a $Uniform(0,1)$ prior for $t_i$ and a discrete uniform prior for $s_i$ and $J_i$.
+
+
+## Posterior
+
+\begin{equation}
+\label{fullpost}
+\mathcal{N}\left({\bf B_{i}}'\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right) \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg) \mathcal{N} \left( 0,~\tau^2 {\bf I} \right) IG~(\gamma_1,~\gamma_2) \Gamma \left(h_1, ~h_2\right)
+\end{equation}
+
+### Regression Coefficients
+
+We can marginalize $\boldsymbol\beta$ out of the posterior to obtain a marginal posterior that relies on the regression estimate
 
 \begin{equation}
 \label{9}
 \boldsymbol{\hat{\beta}} = 
 \frac{1}{\sigma^2}
-\left( \frac{1}{\sigma^2} {\bf X'VX} + {\tau^{-2}}{{\bf I}} \right)^{-1} {\bf X'} {\bf V}~{{{\bf y}}}
+\left( \frac{1}{\sigma^2} {\bf B'VB} + {\tau^{-2}}{{\bf I}} \right)^{-1} {\bf B'} {\bf V}~{{{\bf y}}}
 \end{equation}
 
 
 where $\tau^2$ is the prior variance for $\beta_{i}$.
 
-### Marginal Likelihood Function 
-
 Estimate (\ref{9}) allows us to achieve our t-distributed likelihood function for the birth step. After marginalizing out $\boldsymbol\beta$ and $\sigma^2$, we can simplify our Likelihood $L$ to
 
 $$
-L({\bf y}\mid\cdot) \propto \left(\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2}\exp\left(-\frac{1}{2}{\bf y'V^{-1}y} \right) \exp\left(-\frac{1}{2}\boldsymbol{{\beta}}'{\bf H^{-1}}\boldsymbol{{\beta}} - 2\boldsymbol{{\beta}}'{\bf X'V^{-1}y}\right)
+L({\bf y}\mid\cdot) \propto \left(\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2}\exp\left(-\frac{1}{2}{\bf y'V^{-1}y} \right) \exp\left(-\frac{1}{2}\boldsymbol{\hat{\beta}}'{\bf H^{-1}}\boldsymbol{\hat{\beta}} - 2\boldsymbol{\hat{\beta}}'{\bf B'V^{-1}y}\right)
 $$
 
-where ${\bf H} = ({\bf X'V^{-1}X} + \tau^{-2}{\bf I})$.\newline
+where ${\bf H} = ({\bf B'V^{-1}B} + \tau^{-2}{\bf I})$.\newline
 
-We then complete the square on the first exponential term using ${\bf y'~V^{-1}X~ H^{-1}~X'V^{-1}y}$ which simplifies to $\boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}$ since ${\bf X'V^{-1}y} = {\bf H}{\boldsymbol{\hat{\beta}}}$ from (\ref{9}).\newline
+We then complete the square on the first exponential term using ${\bf y'~V^{-1}B~ H^{-1}~B'V^{-1}y}$ which simplifies to $\boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}$ since ${\bf B'V^{-1}y} = {\bf H}{\boldsymbol{\hat{\beta}}}$ from (\ref{9}).\newline
 
 From there, we have that
 
@@ -176,40 +211,16 @@ L({\bf y}\mid\cdot) &= \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2
 &= \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~ \exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)~
 \mathcal N\left(\boldsymbol\beta \mid \boldsymbol{\hat\beta}, ~{\bf H}^{-1}\right) \left|{\bf H}^{-1}\right|^{-1/2}\left(2\pi\right)^{\frac{M+1}{2}}\\
 &= \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right\rbrace\\
-&= \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
+&= \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf B'V^{-1}B} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
 \end{aligned} 
 $$
 
 \begin{equation}
 \label{like}
-\Rightarrow L({\bf y}\mid\cdot) = (\tau^2)^{\frac{M+1}{2}} |{\bf V}|^{-1/2} ~\left|({\bf X^tV^{-1}X} +{\tau^{-2}} {\bf I})^{-1}\right|^{-1/2} \exp\bigg\lbrace -\frac{1}{2}\big({\bf y'V^{-1}y} - \boldsymbol{\hat\beta}^t ({\bf X^tV^{-1}X} +{\tau^{-2}} {\bf I})^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
+\Rightarrow L({\bf y}\mid\cdot) = (\tau^2)^{\frac{M+1}{2}} |{\bf V}|^{-1/2} ~\left|({\bf B'V^{-1}B} +{\tau^{-2}} {\bf I})^{-1}\right|^{-1/2} \exp\bigg\lbrace -\frac{1}{2}\big({\bf y'V^{-1}y} - \boldsymbol{\hat\beta}' ({\bf B'V^{-1}B} +{\tau^{-2}} {\bf I})^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
 \end{equation}
 
 Equation (\ref{like}) is the likelihood for the current model with $M$ basis functions.\newline
-
-## Priors {#priors}
-
-We assume an Inverse-Gamma prior for $\sigma^2$ with default shape $\gamma_1 = 0$ and default rate $\gamma_2=0$ such that
-
-\begin{equation}
-\label{s2}
-\sigma^2 \sim IG~(\gamma_1,~\gamma_2)
-\end{equation}
-
-We also assume a Gamma prior with shape and rate $\frac{\nu}{2}$ for $V_i$, such that
-
-\begin{equation}
-\label{vi}
-V_i \sim \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg)
-\end{equation}
-
-For $\lambda$, we assume a gamma prior such that $h_1 = h_2= 10$ by default.
-
-\begin{equation}
-\label{lamprior}
-\lambda \sim \Gamma \left(h_1, ~h_2\right)
-\end{equation}
-
 
 ## Reversible-Jump Markov Chain Monte Carlo (RJ-MCMC)
 
@@ -236,7 +247,7 @@ Our acceptance ratio $\alpha$ is denoted by
 \label{TBD}
 \alpha = min\left\lbrace 
 1,\
-\frac{L(D|\theta') \ p(\theta')\ S(\theta'\rightarrow\theta)}{L(D|\theta)\ p(\theta) \ S(\theta\rightarrow\theta')} 
+\frac{\pi(\theta') \ S(\theta'\rightarrow\theta)}{\pi(\theta)\ S(\theta\rightarrow\theta')} 
 \right\rbrace
 \end{equation}
 
@@ -254,7 +265,7 @@ Since a basis function is added for the birth step, we have that
 
 \begin{equation}
 L({\bf y} \mid {\theta' = M'}) \propto 
-\left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left(\bf{y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left(\bf{X'V^{-1}X} + \tau^{-2} {\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
+\left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left(\bf{y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left(\bf{B'V^{-1}B} + \tau^{-2} {\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
 \end{equation} 
 
 
@@ -263,8 +274,8 @@ Using (\ref{like}), the likelihood ratio $\frac{L(\theta')}{L(\theta)}$ is then 
 
 \begin{equation}
 \label{12}
-\frac{L({\bf y} \mid {\theta' = M'=M+1})}{L({\bf y} \mid {\theta = M})} = \frac{\left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}_c\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}'_{c} \left({\bf X'_{c}V^{-1}X_{c}} + \tau^{-2}{\bf I_{c}}\right) \boldsymbol{\hat\beta}_{c}\right)\right\rbrace}
-{\left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace}\\\\
+\frac{L({\bf y} \mid {\theta' = M'=M+1})}{L({\bf y} \mid {\theta = M})} = \frac{\left(\tau^2\right)^{-\frac{M+2}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}_c\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}'_{c} \left({\bf B'_{c}V^{-1}B_{c}} + \tau^{-2}{\bf I_{c}}\right) \boldsymbol{\hat\beta}_{c}\right)\right\rbrace}
+{\left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf B'V^{-1}B} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace}\\\\
 \end{equation}
 
 where the subscript $c$ denotes the candidate move type of the algorithm (a birth step in this case).\newline
@@ -312,11 +323,11 @@ V_i | \cdot \sim \Gamma\left\lbrace\frac{\nu + 1}{2},~ \frac{1}{2\sigma^2} \sum_
 \end{equation}
 
 \begin{equation}
-\sigma^2 | \cdot\sim IG\left(\gamma_1 + \frac{n}{2}, ~\gamma_2 + \frac{1}{2} \left({\bf y} - {\bf X}\boldsymbol{\beta}\right)^t \left({\bf y} - {\bf X}\boldsymbol{\beta}\right)  \right)
+\sigma^2 | \cdot\sim IG\left(\gamma_1 + \frac{n}{2}, ~\gamma_2 + \frac{1}{2} \left({\bf y} - {\bf B}\boldsymbol{\beta}\right)' \left({\bf y} - {\bf B}\boldsymbol{\beta}\right)  \right)
 \end{equation}
 
 \begin{equation}
-\boldsymbol{\beta} | \cdot \sim \mathcal{N}\bigg( \boldsymbol{\hat\beta}, \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \bigg)
+\boldsymbol{\beta} | \cdot \sim \mathcal{N}\bigg( \boldsymbol{\hat\beta}, \left({\bf B'V^{-1}B} + \tau^{-2}{\bf I}\right) \bigg)
 \end{equation}
 
 where $\boldsymbol{\hat\beta}$ is denoted in (\ref{9}).\newline
@@ -386,7 +397,7 @@ col[ind] <- 2
 From there, we can run the `tbass()` command with 30000 MCMC iterations (default 10000). Our first simulation is with $\nu = 10$ degrees of freedom to simulate a t-distribution with thicker tails.
 
 ```{r,cache=TRUE}
-nmcmc <- 30000 #number of iterations
+nmcmc <- 300 #number of iterations
 tb <- tbass(x, y, nu = 10, nmcmc = nmcmc, verbose = FALSE)
 ```
 
@@ -456,7 +467,7 @@ To account for the differences in behavior for Robust BMARS (`TBASS`) and Gaussi
 
 ```{r, cache = TRUE}
 library(BASS)
-b <- bass(x,y,nmcmc = nmcmc) # automatically runs 10000 nmcmc iterations
+b <- bass(x,y,nmcmc = 10000) # automatically runs 10000 nmcmc iterations
 ```
 
 ### BASS Basis Functions
