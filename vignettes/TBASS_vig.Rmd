@@ -45,11 +45,11 @@ The R package TBASS is an extension of the BASS package created by Francom and S
 
 # Introduction
 
-Splines are a commonly used regression tool for fitting nonlinear data, both univariate and multivariate. Splines can act as basis functions, where each basis function combines to form the ${\bf X}$ matrix. The simplest way to create the ith basis functions can be represented as $\prod_{i=1}^{n}$
+Splines are a commonly used regression tool for fitting nonlinear data, both univariate and multivariate. Splines can act as basis functions, where each basis function combines to form the ${\bf X}$ matrix. The simplest way to create the ith basis functions can be represented as 
 
 \begin{equation}
 \label{1}
-\prod{\bf B}_{ij} = [s_i(x_{j} - t_{i})]_{+}
+\prod_{i=1}^{n}{\bf B}_{ij} = [s_i(x_{j} - t_{i})]_{+}
 \end{equation}
 
 Equation (\ref{1}) is used to calculate the ijth element of the ${\bf B}$ matrix of basis functions, where $s_i \in \lbrace-1,1\rbrace$, $t_i$ is called a **knot** and $[a]_{+} = \max(0, a)$.
@@ -253,7 +253,7 @@ Our acceptance ratio $\alpha$ is denoted by
 \right\rbrace
 \end{equation}
 
-where $D$ represents the data, $\theta'$ represents the candidate model parameters and $\theta$ represents the current model parameters, $L$ is the likelihood, $p$ is the prior, and $S$ is the proposal to jump from one model to another. 
+where $\theta'$ represents the candidate model parameters and $\theta$ represents the current model parameters, $\pi$ is the likelihood multiplied by the prior, and $S$ is the proposal to jump from one model to another. 
 
 Section [2.6](#birth) details the RJ-MCMC algorithm for the birth step in detail. The death and change steps are very similar in nature.
 
@@ -457,8 +457,9 @@ We see that the peaks in $V_i$ are accounting for the outliers, while the majori
 To account for the differences in behavior for Robust BMARS (`TBASS`) and Gaussian BMARS (`BASS`), we compare our results from TBASS to the output from BASS, which assumes a Gaussian likelihood.
 
 ```{r, cache = TRUE}
+set.seed(12)
 library(BASS)
-b <- bass(x,y,nmcmc = 10000) # automatically runs 10000 nmcmc iterations
+b <- bass(x,y,nmcmc = 30000) # automatically runs 10000 nmcmc iterations
 ```
 
 ### BASS Basis Functions
