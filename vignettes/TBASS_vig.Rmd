@@ -147,7 +147,7 @@ In the Student's t-distribution, we can marginalize the posterior for $\boldsymb
 \label{9}
 \boldsymbol{\hat{\beta}} = 
 \frac{1}{\sigma^2}
-\left( \frac{1}{\sigma^2} {\bf X'VX} + {\tau^{-2}}{{I}} \right)^{-1} {\bf X'} {\bf V}~{{{\bf y}}}
+\left( \frac{1}{\sigma^2} {\bf X'VX} + {\tau^{-2}}{{\bf I}} \right)^{-1} {\bf X'} {\bf V}~{{{\bf y}}}
 \end{equation}
 
 
