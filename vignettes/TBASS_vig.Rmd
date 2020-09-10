@@ -171,9 +171,11 @@ We use a $Uniform(0,1)$ prior for $t_i$ and a discrete uniform prior for $s_i$ a
 
 ## Posterior
 
+The full posterior up to a constant is 
+
 \begin{equation}
 \label{fullpost}
-\mathcal{N}\left({\bf B_{i}}'\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right) \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg) \mathcal{N} \left( 0,~\tau^2 {\bf I} \right) IG~(\gamma_1,~\gamma_2) \Gamma \left(h_1, ~h_2\right)
+\mathcal{N}\left({\bf B_{i}}'\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right)~ \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg)~ \mathcal{N} \left( 0,~\tau^2 {\bf I} \right)~ IG~(\gamma_1,~\gamma_2) ~ \Gamma \left(h_1, ~h_2\right)
 \end{equation}
 
 ### Regression Coefficients
