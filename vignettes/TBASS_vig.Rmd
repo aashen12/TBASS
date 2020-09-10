@@ -169,14 +169,14 @@ From there, we have that
 
 $$
 \begin{aligned}
-L({\bf y}\mid\cdot) &\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~\exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)
+L({\bf y}\mid\cdot) &= \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~\exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)
 \exp\left\lbrace-\frac{1}{2}\left(\boldsymbol\beta'{\bf H}\boldsymbol\beta - \boldsymbol\beta'{\bf H}\boldsymbol{\hat{\beta}} - \boldsymbol{\hat{\beta}}'{\bf H}\boldsymbol\beta + \boldsymbol{\hat{\beta}}'{\bf H}\boldsymbol{\hat{\beta}} \right)\right\rbrace\\
-&\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~\exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)
+&= \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~\exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)
 \exp\left\lbrace-\frac{1}{2}\left[\left(\boldsymbol\beta -\boldsymbol{\hat{\beta}} \right)'{\bf H}\left(\boldsymbol\beta -\boldsymbol{\hat{\beta}}\right)\right]\right\rbrace\\
-&\propto \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~ \exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)~
+&= \left(2\pi\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~ \exp\left(-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right)~
 \mathcal N\left(\boldsymbol\beta \mid \boldsymbol{\hat\beta}, ~{\bf H}^{-1}\right) \left|{\bf H}^{-1}\right|^{-1/2}\left(2\pi\right)^{\frac{M+1}{2}}\\
-&\propto \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right\rbrace\\
-&\propto \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
+&= \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}\right)\right\rbrace\\
+&= \left(\tau^2\right)^{-\frac{M+1}{2}}  |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2} \exp\left\lbrace-\frac{1}{2}\left({\bf y'V^{-1}y} - \boldsymbol{\hat{\beta}}' \left({\bf X'V^{-1}X} + \tau^{-2}{\bf I}\right) \boldsymbol{\hat\beta}\right)\right\rbrace
 \end{aligned} 
 $$
 
@@ -349,7 +349,7 @@ library(TBASS)
 
 ## Friedman Function Simulation
 
-We fit the Robust BMARS model to the infamous Friedman Function (Friedman, 1991):
+We fit the Robust BMARS model to the infamous Friedman Function (@friedman1991multivariate):
 
 \begin{equation}
 \label{fried}
