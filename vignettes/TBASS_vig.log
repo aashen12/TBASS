@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  9 SEP 2020 20:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  9 SEP 2020 20:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1142,14 +1142,14 @@ Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf us
 ed on input line 585.
 (pdftex.def)             Requested size: 434.6293pt x 286.07242pt.
 [9 <./TBASS_vig_files/figure-latex/unnamed-chunk-10-1.pdf>]
-<TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf, id=159, 444.66125pt x 283
-.0575pt>
+<TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf, id=159, 437.635pt x 283.0
+575pt>
 File: TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf Graphic file (type pd
 f)
 <use TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf>
 Package pdftex.def Info: TBASS_vig_files/figure-latex/unnamed-chunk-13-1.pdf us
 ed on input line 605.
-(pdftex.def)             Requested size: 444.66016pt x 283.0568pt.
+(pdftex.def)             Requested size: 437.6406pt x 283.06111pt.
 [10 <./TBASS_vig_files/figure-latex/unnamed-chunk-11-1.pdf>]
 <TBASS_vig_files/figure-latex/unnamed-chunk-14-1.pdf, id=174, 436.63126pt x 285
 .065pt>
@@ -1225,7 +1225,7 @@ t/fonts/type1/public/lm/lmsy7.pfb></usr/local/texlive/2017/texmf-dist/fonts/typ
 e1/public/lm/lmtk10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/
 lm/lmtt10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmtti10
 .pfb>
-Output written on TBASS_vig.pdf (14 pages, 1317121 bytes).
+Output written on TBASS_vig.pdf (14 pages, 1047730 bytes).
 PDF statistics:
  414 PDF objects out of 1000 (max. 8388607)
  347 compressed objects within 4 object streams

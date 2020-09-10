@@ -424,7 +424,7 @@ We see that the prediction is quite accurate despite the presence of outliers.
 We set a burn-in value to the first 50% of samples.
 
 ```{r}
-burn_final <- nmcmc/50
+burn_final <- nmcmc/2
 burn <- 1:burn_final
 ```
 
