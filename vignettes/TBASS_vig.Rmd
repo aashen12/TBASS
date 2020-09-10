@@ -87,6 +87,8 @@ generate_spline <- function(tvec, nknot = length(tvec)) {
 t <- c(0, 0.525, 0.875)
 ```
 
+\  
+  
 ```{r,echo=FALSE}
 plot(x,y,main=paste0("Figure ",1," : Univariate Nonlinear Data"))
 generate_spline(t)
@@ -238,7 +240,7 @@ Our acceptance ratio $\alpha$ is denoted by
 \right\rbrace
 \end{equation}
 
-where $D$ represents the data, $\theta'$ represents the candidate model parameters and $\theta$ represent the current model parameters, $L$ is the likelihood, $p$ is the prior, and $S$ is the proposal to jump from one model to another. 
+where $D$ represents the data, $\theta'$ represents the candidate model parameters and $\theta$ represents the current model parameters, $L$ is the likelihood, $p$ is the prior, and $S$ is the proposal to jump from one model to another. 
 
 Section [2.6](#birth) details the RJ-MCMC algorithm for the birth step in detail. The death and change steps are very similar in nature.
 
