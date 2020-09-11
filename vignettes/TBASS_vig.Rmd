@@ -202,7 +202,7 @@ where ${\bf H} = ({\bf B'V^{-1}B} + \tau^{-2}{\bf I})$.\newline
 
 We then complete the square on the first exponential term using ${\bf y'~V^{-1}B~ H^{-1}~B'V^{-1}y}$ which simplifies to $\boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}$ since ${\bf B'V^{-1}y} = {\bf H}{\boldsymbol{\hat{\beta}}}$ from (\ref{9}).\newline
 
-From there, we have that
+From there, we can derive our likelihood:
 
 $$
 \begin{aligned}
