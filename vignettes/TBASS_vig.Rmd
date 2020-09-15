@@ -346,7 +346,7 @@ At this time, you must have R Version 4.0.2 (Taking Off Again) or higher to inst
 
 The package `mnormt` is REQUIRED in order to use `TBASS`. Please run `install.packages("mnormt")` to install the package. This dependency will be removed when the package is updated further. No other dependencies are required.\newline
 
-We begin by loading in the package and setting the seed for reproducibility. The package can be installed using the following command: `devtools::install_github("aashen12/TBASS")` which requires installing the package `devtools.`\newline
+We begin by loading in the package and setting the seed for reproducibility. The package can be installed using the following command: `devtools::install_github("aashen12/TBASS")` which requires installing the package `devtools`.\newline
 
 When installing `TBASS`, you may be asked to update packages to a more recent version. Please update all packages (option 1). 
 
