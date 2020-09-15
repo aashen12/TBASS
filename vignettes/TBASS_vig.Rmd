@@ -247,7 +247,7 @@ Our acceptance ratio $\alpha$ is denoted by
 
 \begin{equation}
 \label{TBD}
-\alpha = min\left\lbrace 
+\alpha = \min\left\lbrace 
 1,\
 \frac{\pi(\theta') \ S(\theta'\rightarrow\theta)}{\pi(\theta)\ S(\theta\rightarrow\theta')} 
 \right\rbrace
