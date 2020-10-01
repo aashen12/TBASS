@@ -34,7 +34,7 @@ library(TBASS)
 
 \begin{abstract}
 
-The R package TBASS is an extension of the BASS package created by Francom and Sansó (2019). The package is used to fit a Bayesian multivariate adaptive spline to a dataset that either follows a Student's t-distribution or has outliers. Much of the framework for TBASS is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done by Denison, Mallick, and Smith (1998). The spline function is fit using a Reversible-Jump Markov Chain Monte Carlo algorithm, followed by Gibbs Sampling. By including this more robust generalization, a dataset with outliers can accurately fit using the BMARS model, without the possibility of overfitting or variance inflation.\newline
+The R package TBASS is an extension of the BASS package created by Francom and Sansó (2019). The package is used to fit a Bayesian multivariate adaptive spline to a dataset that either follows a Student's t-distribution or has outliers. Much of the framework for TBASS is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done by Denison, Mallick, and Smith (1998). The spline function is fit using a Reversible-Jump Markov Chain Monte Carlo algorithm,. By including this more robust generalization, a dataset with outliers can be accurately fit using the BMARS model, without the possibility of overfitting or variance inflation.\newline
 
 \end{abstract}
 
@@ -49,7 +49,7 @@ Splines are a commonly used regression tool for fitting nonlinear data, both uni
 
 \begin{equation}
 \label{1}
-\prod_{i=1}^{n}{\bf B}_{ij} = [s_i(x_{j} - t_{i})]_{+}
+{\bf B}_{ij} = [s_i(x_{j} - t_{i})]_{+}
 \end{equation}
 
 Equation (\ref{1}) is used to calculate the ijth element of the ${\bf B}$ matrix of basis functions, where $s_i \in \lbrace-1,1\rbrace$, $t_i$ is called a **knot** and $[a]_{+} = \max(0, a)$.
@@ -130,7 +130,7 @@ or equivalently,
 y_i | V_i \sim \mathcal{N}\left({\bf B_{i}}'\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right).
 \end{equation}
 
-We also assume a Gamma prior with shape and rate $\frac{\nu}{2}$ for $V_i$, such that
+We also assume $V_i$ follows a a Gamma distribution with shape and rate $\frac{\nu}{2}$, such that
 
 \begin{equation}
 \label{vi}
@@ -166,7 +166,6 @@ For $\lambda$, we assume a gamma prior such that $h_1 = h_2= 10$ by default:
 \lambda \sim \Gamma \left(h_1, ~h_2\right).
 \end{equation}
 
-We use a $Uniform(0,1)$ prior for $t_i$ and a discrete uniform prior for $s_i$ and $J_i$.
 
 
 ## Posterior
@@ -175,7 +174,7 @@ The full posterior up to a constant is
 
 \begin{equation}
 \label{fullpost}
-\mathcal{N}\left({\bf B_{i}}'\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right)~ \Gamma \bigg(\frac{\nu}{2}, ~\frac{\nu}{2}\bigg)~ \mathcal{N} \left( 0,~\tau^2 {\bf I} \right)~ IG~(\gamma_1,~\gamma_2) ~ \Gamma \left(h_1, ~h_2\right)
+\mathcal{N}\left({\bf B_{i}}'\boldsymbol{\beta}, ~ \frac{\sigma^2}{V_i}\right)~ \Gamma \bigg(V_i | \frac{\nu}{2}, ~\frac{\nu}{2}\bigg)~ \mathcal{N} \left(\boldsymbol\beta | 0,~\tau^2 {\bf I} \right)~ IG~(\sigma^2 | \gamma_1,~\gamma_2) ~ \Gamma \left( \lambda | h_1, ~h_2\right)
 \end{equation}
 
 ### Regression Coefficients
@@ -190,9 +189,9 @@ We can marginalize $\boldsymbol\beta$ out of the posterior to obtain a marginal 
 \end{equation}
 
 
-where $\tau^2$ is the prior variance for $\beta_{i}$.
+where $\tau^2$ is the prior variance for $\beta_{i}$ and ${\bf V}^{-1} = diag(\frac{1}{V_1}...\frac{1}{V_n})$. 
 
-Estimate (\ref{9}) allows us to achieve our t-distributed likelihood function for the birth step. After marginalizing out $\boldsymbol\beta$ and $\sigma^2$, we can simplify our Likelihood $L$ to
+After marginalizing out $\boldsymbol\beta$, we can simplify our Likelihood $L$ to
 
 $$
 L({\bf y}\mid\cdot) \propto \left(\tau^2\right)^{-\frac{M+1}{2}}~ |{\bf V}|^{-1/2}~ \left|{\bf H}^{-1}\right|^{-1/2}\exp\left(-\frac{1}{2}{\bf y'V^{-1}y} \right) \exp\left(-\frac{1}{2}\boldsymbol{\hat{\beta}}'{\bf H^{-1}}\boldsymbol{\hat{\beta}} - 2\boldsymbol{\hat{\beta}}'{\bf B'V^{-1}y}\right)
@@ -202,7 +201,7 @@ where ${\bf H} = ({\bf B'V^{-1}B} + \tau^{-2}{\bf I})$.\newline
 
 We then complete the square on the first exponential term using ${\bf y'~V^{-1}B~ H^{-1}~B'V^{-1}y}$ which simplifies to $\boldsymbol{\hat{\beta}}' {\bf H} \boldsymbol{\hat\beta}$ since ${\bf B'V^{-1}y} = {\bf H}{\boldsymbol{\hat{\beta}}}$ from (\ref{9}).\newline
 
-From there, we can derive our likelihood:
+From there, we can derive our marginal posterior:
 
 $$
 \begin{aligned}
@@ -222,13 +221,13 @@ $$
 \Rightarrow L({\bf y}\mid\cdot) = (\tau^2)^{\frac{M+1}{2}} |{\bf V}|^{-1/2} ~\left|({\bf B'V^{-1}B} +{\tau^{-2}} {\bf I})^{-1}\right|^{-1/2} \exp\bigg\lbrace -\frac{1}{2}\big({\bf y'V^{-1}y} - \boldsymbol{\hat\beta}' ({\bf B'V^{-1}B} +{\tau^{-2}} {\bf I})^{-1}\boldsymbol{\hat\beta}\big) \bigg\rbrace
 \end{equation}
 
-Equation (\ref{like}) is the likelihood for the current model with $M$ basis functions.\newline
+Equation (\ref{like}) is the marginal posterior for the current model with $M$ basis functions.\newline
 
 ## Reversible-Jump Markov Chain Monte Carlo (RJ-MCMC)
 
 Like Gaussian BMARS, the robust algorithm adaptively builds, deletes, and modifies basis functions, sampling candidate knot locations, signs, interaction degrees, and accepting or rejecting the candidate values using a RJ-MCMC algorithm.\newline
 
-RJ-MCMC is a generalization of the traditional Metropolis-Hastings algorithm in the sense that RJ-MCMC allows for parameter dimension change, allowing for simulation when the number of parameters is unknown. This is important for BMARS because we want to learn where knots should be placed and how many basis functions to have in our model, along with the degree of interaction for our basis functions. We also want to know if certain basis functions should be added, deleted, or changed.\newline
+RJ-MCMC is a generalization of the traditional Metropolis-Hastings algorithm in the sense that RJ-MCMC allows for parameter dimension change, allowing for simulation when the number of parameters is unknown. This is important for BMARS because we want have an unknown number of basis functions. We also want to know if certain basis functions should be added, deleted, or changed.\newline
 
 Our Robust generalization for the RJ-MCMC algorithm is largely based off the work by @denison1998bayesian.\newline
 
@@ -253,7 +252,7 @@ Our acceptance ratio $\alpha$ is denoted by
 \right\rbrace
 \end{equation}
 
-where $\theta'$ represents the candidate model parameters and $\theta$ represents the current model parameters, $\pi$ is the likelihood multiplied by the prior, and $S$ is the proposal to jump from one model to another. 
+where $\theta'$ represents the candidate model parameters and $\theta$ represents the current model parameters, $\pi$ is the likelihood multiplied by the prior, and $S$ is the proposal density to jump from one model to another. 
 
 Section [2.6](#birth) details the RJ-MCMC algorithm for the birth step in detail. The death and change steps are very similar in nature.
 
@@ -271,7 +270,7 @@ L({\bf y} \mid {\theta' = M'}) \propto
 \end{equation} 
 
 
-Using (\ref{like}), the likelihood ratio $\frac{L(\theta')}{L(\theta)}$ is then represented as
+Using (\ref{like}), the marginal posterior ratio $\frac{L(\theta')}{L(\theta)}$ is then represented as
 
 
 \begin{equation}
@@ -294,7 +293,7 @@ For the birth step, our prior ratio $\frac{p(\theta')}{p(\theta)}$ is of the fol
 \frac{\lambda}{M+1} ~\bigg(\frac{1}{2}\bigg)^{J} {p\choose J}^{-1} \bigg(\frac{1}{J_{max}}\bigg)~ (M+1)
 \end{equation}
 
-where $\frac{\lambda}{M+1}$ is the prior for the number of basis functions with $M$ current knots, $\big(\frac{1}{2}\big)^{J}$  is the prior for the signs, ${p\choose J}^{-1}$ is the prior for the number of possible variable combinations to create basis functions with, $\frac{1}{J_{max}}$ is the prior for the number of interactions, and $M+1$ is accounting for ordering the basis functions.
+where $\frac{\lambda}{M+1}$ is the prior for the number of basis functions with $M$ current basis functions, $\big(\frac{1}{2}\big)^{J}$  is the prior for the signs, ${p\choose J}^{-1}$ is the prior for the number of possible variable combinations to create basis functions with, $\frac{1}{J_{max}}$ is the prior for the number of interactions, and $M+1$ is accounting for ordering the basis functions.
 
 ### Proposal Ratio 
 
@@ -321,7 +320,7 @@ Derived from section [2.3](#priors), the full conditionals are of the following 
 \end{equation}
 
 \begin{equation}
-V_i | \cdot \sim \Gamma\left\lbrace\frac{\nu + 1}{2},~ \frac{1}{2\sigma^2} \sum_{i=1}^{n}{({\bf y} - {\bf X}\boldsymbol\beta)^2}\right\rbrace
+V_i | \cdot \sim \Gamma\left\lbrace\frac{\nu + 1}{2},~ \frac{1}{2\sigma^2} \sum_{i=1}^{n}{({\bf y} - {\bf B}\boldsymbol\beta)^2}\right\rbrace
 \end{equation}
 
 \begin{equation}
@@ -329,7 +328,7 @@ V_i | \cdot \sim \Gamma\left\lbrace\frac{\nu + 1}{2},~ \frac{1}{2\sigma^2} \sum_
 \end{equation}
 
 \begin{equation}
-\boldsymbol{\beta} | \cdot \sim \mathcal{N}\bigg( \boldsymbol{\hat\beta}, \left({\bf B'V^{-1}B} + \tau^{-2}{\bf I}\right) \bigg)
+\boldsymbol{\beta} | \cdot \sim \mathcal{N}\bigg( \boldsymbol{\hat\beta}, \sigma^2 \left({\bf B'V^{-1}B} + \tau^{-2}{\bf I}\right) \bigg)
 \end{equation}
 
 where $\boldsymbol{\hat\beta}$ is denoted in (\ref{9}).\newline
@@ -415,9 +414,9 @@ We begin by plotting the number of basis functions throughout the entire simulat
 plot(tb$nbasis, type = "l", xlab = "nmcmc", ylab = "Number of Basis Functions")
 ```
 
-We see that there are 9 basis functions from `BASS`, indicating that there was no overfitting in the `TBASS` model with 10 basis functions.
+We see that `BASS` and `TBASS` both produce a spline with a similar number of basis functions.
 
-We then assess the accuracy of our predicted $\bf y$ values (${\bf X}\boldsymbol\beta$) vs the actual y-values in Figure 4.
+We then assess the accuracy of our predicted $\bf y$ values (${\bf B}\boldsymbol\beta$) vs the actual y-values for all MCMC iterations in Figure 4.
 
 ```{r,echo=FALSE,fig.cap = "Predicted vs Actual Values"}
 plot(tb$X %*% tb$b, y, col = col, xlab = "Predicted y-values")
@@ -450,7 +449,7 @@ matplot(sqrt(1/tb$v[seq(burn_final,nmcmc,nmcmc/100),]),
         type="l", xlab = "nmcmc", ylab = "V")
 ```
 
-We see that the peaks in $V_i$ are accounting for the outliers, while the majority of $V_i$ values are in the bottom portion of the plot.
+We see that the peaks in $V_i$ are accounting for the outliers, while the majority of $V_i$ values are in the bottom portion of the plot. Additionally, the samples of $V_i$ that are relatively large over all MCMC iterations also indicate outlier capturing in the `TBASS` model.
 
 ## Comparison with `BASS`
 
@@ -477,7 +476,10 @@ plot(b$nbasis, type = "l", xlab = "nmcmc", ylab = "Number of Basis Functions")
 plot(b$s2, type = "l", xlab = "nmcmc", ylab = "variance")
 ```
 
-We see that the $\sigma^2$ from Gaussian BMARS is over two times as large as the $\sigma^2$ from `TBASS`, indicating that Gaussian BMARS is more sensitive to outliers and will inflate $\sigma^2$ when outliers are present.
+In Figure 8, we see that the $\sigma^2$ from Gaussian BMARS is over two times as large as the $\sigma^2$ from `TBASS`, indicating that Gaussian BMARS is more sensitive to outliers and will inflate $\sigma^2$ when outliers are present.
+
+\pagebreak
+
 
 # Conclusion
 
