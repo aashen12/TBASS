@@ -259,7 +259,7 @@ Section [2.6](#birth) details the RJ-MCMC algorithm for the birth step in detail
 
 ## Birth Step {#birth}
 
-### Likelihood Ratio
+### Marginal Posterior Ratio
 
 Since a basis function is added for the birth step, we have that
 
