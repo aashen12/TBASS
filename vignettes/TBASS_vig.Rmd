@@ -94,7 +94,6 @@ t <- c(0, 0.525, 0.875)
   
 ```{r,echo=FALSE,fig.cap = "Univariate nonlinear data"}
 plot(x,y)
-
 ```
 
 ```{r,echo=FALSE,fig.cap = "The blue line represents the spline function fit to the data using three knots"}
