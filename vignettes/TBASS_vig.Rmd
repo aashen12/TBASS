@@ -35,7 +35,7 @@ library(TBASS)
 
 \begin{abstract}
 
-The R package TBASS is an extension of the BASS package created by Francom and Sansó (2019). The package is used to fit a Bayesian multivariate adaptive spline to a dataset that either follows a Student's t-distribution or has outliers. Much of the framework for TBASS is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done by Denison, Mallick, and Smith (1998). The spline function is fit using a Reversible-Jump Markov Chain Monte Carlo algorithm,. By including this more robust generalization, a dataset with outliers can be accurately fit using the BMARS model, without the possibility of overfitting or variance inflation.\newline
+The R package TBASS is an extension of the BASS package created by Francom and Sansó (2019). The package is used to fit a Bayesian multivariate adaptive spline to a dataset that either follows a Student's t-distribution or has outliers. Much of the framework for TBASS is adapted from the concepts of Bayesian Multivariate Adaptive Regression Splines (BMARS), specifically the work done by Denison, Mallick, and Smith (1998). The spline function is fit using a Reversible-Jump Markov Chain Monte Carlo algorithm. By including this more robust generalization, a dataset with outliers can be accurately fit using the BMARS model, without the possibility of overfitting or variance inflation.\newline
 
 \end{abstract}
 
